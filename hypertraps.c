@@ -9,7 +9,13 @@
 #include <time.h>
 #include <sys/time.h>
 
-#define RND drand48()
+#ifdef _WIN32
+  #define RNDSEED(x) srand(x)
+  #define RND ((double)rand() / RAND_MAX)
+#else
+  #define RNDSEED(x) srand48(x)
+  #define RND drand48()
+#endif
 
 // lazy constants (just for memory allocation) -- consider increasing if memory errors are coming up
 #define _MAXN 20000      // maximum number of datapoints
@@ -1392,7 +1398,7 @@ int main(int argc, char *argv[])
       if(_EVERYITERATION)
 	SAMPLE = 1;
 
-      srand48(seed);
+      RNDSEED(seed);
       matrix = (int*)malloc(sizeof(int)*_MAXDATA);
 
       // choose parameterisation based on command line
@@ -1797,7 +1803,7 @@ int main(int argc, char *argv[])
 	      // compute likelihood for the new parameterisation
 	      if(apm_type == 1)
 		{
-		  srand48(apm_seed);
+		  RNDSEED(apm_seed);
 		  if(APM_VERBOSE)
 		    {
 		      printf("r seeded with %i, first call is %f\n", apm_seed, RND);
@@ -1955,7 +1961,7 @@ int main(int argc, char *argv[])
       printf("Based on %s with %i params per model and model %i, there are %i features\n", postfile, tlen, model, len);
 
       // initialise and allocate a lot of different arrays to compute and store statistics
-      srand48(seed);
+      RNDSEED(seed);
       allruns  =0;
       ntarg = 0;
       Label(names, len, labelfile);
