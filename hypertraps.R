@@ -949,26 +949,6 @@ plotHypercube.curated.tree = function(tree.set,
   rownames(data.m) = tree.set$data[,1]
   data.m = tree.set$data[1:length(tree.set$tree$tip.label), 2:ncol(tree.set$data)]
   rownames(data.m) = tree.set$data$label[1:length(tree.set$tree$tip.label)]
-  g.core = ggtree(tree.set$tree) + scale.fn
-  if(names == TRUE) {
-    g.core = ggtree(tree.set$tree) + scale.fn + geom_tiplab(size=3, alpha=0.8, nudge_y=0.4, hjust=1)
-  } else {
-    ggtree(tree.set$tree) + scale.fn
-  }
-  this.plot = gheatmap(g.core, data.m, low="white", high="#AAAAAA",
-                       colnames_angle=90, hjust=0, font.size=font.size) +
-    theme(legend.position="none")
-  return(this.plot)
-}
-
-plotHypercube.curated.tree = function(tree.set, 
-                                      scale.fn = geom_treescale(y=20, linesize=3, width =0.01),
-                                      names = FALSE,
-                                      font.size=4) {
-  data.m = tree.set$data[,2:ncol(tree.set$data)]
-  rownames(data.m) = tree.set$data[,1]
-  data.m = tree.set$data[1:length(tree.set$tree$tip.label), 2:ncol(tree.set$data)]
-  rownames(data.m) = tree.set$data$label[1:length(tree.set$tree$tip.label)]
   data.m[which(data.m=="?", arr.ind = TRUE)] = 0.5
   data.m = apply(data.m, c(1,2), as.numeric)
   
