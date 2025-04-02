@@ -932,13 +932,18 @@ curate.tree = function(tree.src, data.src,
     }
   }
   if(enforce.root == TRUE) {
+    if(losses == TRUE) {
+      initial_state = 1
+    } else {
+      initial_state = 0
+    }
     root_node <- findMRCA(tree, tree$tip.label, type="node")
     root_state = my.data[my.data$label == tree.labels[root_node],]
     if(sum(root_state[2:ncol(root_state)]) != 0) {
       message("Root state not implied to be 0^L... adding that transition")
     
       changes = rbind(changes, 
-                      data.frame(from=paste0(root_state[2:ncol(root_state)]*0, collapse=""),
+                      data.frame(from=paste0(root_state[2:ncol(root_state)]*0 + initial_state, collapse=""),
                                to=paste0(root_state[2:ncol(root_state)], collapse=""),
                                time=1,
                                from.node=-1,
@@ -961,7 +966,8 @@ curate.tree = function(tree.src, data.src,
 plotHypercube.curated.tree = function(tree.set, 
                                       scale.fn = geom_treescale(y=20, linesize=3, width =0.01),
                                       names = FALSE,
-                                      font.size=4) {
+                                      font.size=4,
+                                      hjust=0) {
   data.m = tree.set$data[,2:ncol(tree.set$data)]
   rownames(data.m) = tree.set$data[,1]
   data.m = tree.set$data[1:length(tree.set$tree$tip.label), 2:ncol(tree.set$data)]
@@ -976,7 +982,7 @@ plotHypercube.curated.tree = function(tree.set,
     ggtree(tree.set$tree) + scale.fn
   }
   this.plot = gheatmap(g.core, data.m, low="white", high="#AAAAAA",
-                       colnames_angle=90, hjust=0, font.size=font.size) +
+                       colnames_angle=90, hjust=hjust, font.size=font.size) +
     theme(legend.position="none")
     
   return(this.plot)
