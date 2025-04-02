@@ -833,7 +833,9 @@ prob.by.time = function(my.post, tau) {
   return(df)
 }
 
-curate.tree = function(tree.src, data.src, losses = FALSE, data.header=TRUE) {
+curate.tree = function(tree.src, data.src, 
+                       losses = FALSE, data.header=TRUE,
+                       enforce.root = TRUE) {
   if(is.character(tree.src)) {
     # read in Newick tree and root
     my.tree = read.tree(tree.src)
@@ -927,6 +929,21 @@ curate.tree = function(tree.src, data.src, losses = FALSE, data.header=TRUE) {
           change = T
         }
       }
+    }
+  }
+  if(enforce.root == TRUE) {
+    root_node <- findMRCA(tree, tree$tip.label, type="node")
+    root_state = my.data[my.data$label == tree.labels[root_node],]
+    if(sum(root_state[2:ncol(root_state)]) != 0) {
+      message("Root state not implied to be 0^L... adding that transition")
+    
+      changes = rbind(changes, 
+                      data.frame(from=paste0(root_state[2:ncol(root_state)]*0, collapse=""),
+                               to=paste0(root_state[2:ncol(root_state)], collapse=""),
+                               time=1,
+                               from.node=-1,
+                               to.node=root_node,
+                               stringsAsFactors = FALSE))
     }
   }
   srcs = matrix(as.numeric(unlist(lapply(changes$from, strsplit, split=""))), byrow=TRUE, ncol=ncol(new.data)-1)
