@@ -939,9 +939,16 @@ curate.tree = function(tree.src, data.src,
     }
     root_node <- findMRCA(tree, tree$tip.label, type="node")
     root_state = my.data[my.data$label == tree.labels[root_node],]
-    if(sum(root_state[2:ncol(root_state)]) != 0) {
+    to.fix = FALSE
+    if(losses == FALSE & sum(root_state[2:ncol(root_state)]) != 0) {
       message("Root state not implied to be 0^L... adding that transition")
-    
+      to.fix = TRUE
+    }
+    if(losses == TRUE & sum(1-root_state[2:ncol(root_state)]) != 0) {
+      message("Root state not implied to be 1^L... adding that transition")
+      to.fix = TRUE
+    }
+    if(to.fix == TRUE) {
       changes = rbind(changes, 
                       data.frame(from=paste0(root_state[2:ncol(root_state)]*0 + initial_state, collapse=""),
                                to=paste0(root_state[2:ncol(root_state)], collapse=""),
