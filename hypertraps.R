@@ -97,12 +97,28 @@ plotHypercube.bubbles.coarse = function(my.post, reorder=FALSE, transpose=FALSE,
 plotHypercube.bubbles.compare = function(my.post.list, 
                                          reorder=FALSE, transpose=FALSE, 
                                          thetastep=10, p.scale = 1,
-                                         sqrt.trans = FALSE) {
-  toplot = data.frame()
-  for(i in 1:length(my.post.list)) {
-    tmp = my.post.list[[i]]$bubbles
-    tmp$expt = i
-    toplot = rbind(toplot, tmp)
+                                         sqrt.trans = FALSE, 
+                                         bins = 0) {
+  if(bins == 0) {
+    toplot = data.frame()
+    for(i in 1:length(my.post.list)) {
+      tmp = my.post.list[[i]]$bubbles
+      tmp$expt = i
+      toplot = rbind(toplot, tmp)
+    } 
+  } else {
+    toplot = data.frame()
+    for(i in 1:length(my.post.list)) {
+      tmp = my.post.list[[i]]$bubbles
+      
+      tmax = max(tmp$Time)
+      for(this.name in unique(tmp$OriginalIndex)) {
+        for(j in 0:(bins-1)) {
+          prob = sum(tmp$Probability[tmp$OriginalIndex==this.name & round((bins-1)*tmp$Time/tmax)==j])
+          toplot = rbind(toplot, data.frame(OriginalIndex = this.name, Time=j, Probability=prob, expt=i))
+        }
+      }
+    }
   }
   if(reorder == TRUE) {
     toplot$Name = factor(toplot$Name, levels=unique(toplot$Name))
