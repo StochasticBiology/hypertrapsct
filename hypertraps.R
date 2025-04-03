@@ -92,6 +92,66 @@ plotHypercube.bubbles.coarse = function(my.post, reorder=FALSE, transpose=FALSE,
   }
 }
 
+# pass me a list of inference outputs; I'll do a pie-slice comparison of their bubble plots
+# make sure they have the same features!
+plotHypercube.bubbles.compare = function(my.post.list, 
+                                         reorder=FALSE, transpose=FALSE, 
+                                         thetastep=10, p.scale = 1,
+                                         sqrt.trans = FALSE) {
+  toplot = data.frame()
+  for(i in 1:length(my.post.list)) {
+    tmp = my.post.list[[i]]$bubbles
+    tmp$expt = i
+    toplot = rbind(toplot, tmp)
+  }
+  if(reorder == TRUE) {
+    toplot$Name = factor(toplot$Name, levels=unique(toplot$Name))
+  }
+  if(transpose == TRUE) {
+    toplot$x = toplot$Name
+    toplot$y = toplot$Time
+  } else {
+    toplot$x = toplot$Time
+    toplot$y = toplot$Name
+  }
+  
+  if(sqrt.trans==TRUE) {
+    toplot$Probability = sqrt(toplot$Probability)
+  }
+  
+  # construct dataframe for polygonal approximations of pie slices
+  polygons = data.frame()
+  for(i in 1:nrow(toplot)) {
+    thisx = as.numeric(toplot$x[i])
+    thisy = as.numeric(toplot$OriginalIndex[i])
+    thisz = toplot$Probability[i]*p.scale
+    
+    theta0 = 2*pi*(toplot$expt[i]-1)/max(toplot$expt)
+    dtheta = (2*pi/max(toplot$expt))/thetastep
+    theta = theta0
+    
+    # start the polygon at the x-y coordinate
+    tmp = data.frame()
+    tmp = rbind(tmp, data.frame(x1 = thisx, y1 = thisy, 
+                                ref = i, expt = toplot$expt[i])) 
+    # go round in steps of theta, building up the perimeter
+    for(j in 0:(thetastep)) {
+      theta = theta0+j*dtheta
+      tmp = rbind(tmp, data.frame(x1 = thisx + thisz*cos(theta),
+                                  y1 = thisy + thisz*sin(theta),
+                                  ref = i, expt = toplot$expt[i]))
+    }
+    
+    polygons = rbind(polygons, tmp)
+  }
+  
+  # plot the polygons, separated by coordinate and coloured by experiment
+  this.plot = ggplot(polygons, aes(x=x1, y=y1, group=ref, fill=factor(expt))) + geom_polygon() +
+    theme_light() + labs(fill="Experiment", x="Ordinal Time", y = "")
+  
+  return(this.plot)
+}
+
 plotHypercube.graph = function(my.post, thresh = 0.05, 
                                node.labels = TRUE,
                                node.label.size = 2,
