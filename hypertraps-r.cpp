@@ -6,7 +6,6 @@ using namespace Rcpp;
 // function definitions -- for content see comments preceding each function
 List PosteriorAnalysis(List L,
 		       Nullable<CharacterVector> featurenames_arg,
-		       Nullable<NumericVector> startstate,
 		       int use_regularised,
 		       int limited_output,
 		       int samples_per_row,
@@ -350,7 +349,8 @@ List HyperTraPS(NumericMatrix obs, //NumericVector len_arg, NumericVector ntarg_
   int nancount = 0;
   int spectrumtype;
   double bestlik = 0;
-  int _lengthindex, _kernelindex;
+  double _lengthindex;
+  int _kernelindex;
   int SAMPLE;
   int _losses;
   int apm_seed, old_apm_seed;
@@ -534,7 +534,7 @@ List HyperTraPS(NumericMatrix obs, //NumericVector len_arg, NumericVector ntarg_
   if(_EVERYITERATION)
     SAMPLE = 1;
 
-  RNDSEED(_seed);
+  srand48(_seed);
 
   // choose parameterisation based on command line
   expt = _kernelindex;
@@ -624,7 +624,7 @@ List HyperTraPS(NumericMatrix obs, //NumericVector len_arg, NumericVector ntarg_
 
   if(filelabel == 0)
     {
-      sprintf(labelstr, "%s-%i-%i-%i-%i-%i-%i-%i", obsfile, spectrumtype, searchmethod, _seed, _lengthindex, _kernelindex, BANK, _apm_type);
+      sprintf(labelstr, "%s-%i-%i-%i-%.2f-%i-%i-%i", obsfile, spectrumtype, searchmethod, _seed, _lengthindex, _kernelindex, BANK, _apm_type);
     }
   
   // initialise with an agnostic transition matrix
@@ -812,7 +812,7 @@ List HyperTraPS(NumericMatrix obs, //NumericVector len_arg, NumericVector ntarg_
 	  // compute likelihood for the new parameterisation
 	  if(_apm_type == 1)
 	    {
-	      RNDSEED(apm_seed);
+	      srand48(apm_seed);
 	      if(APM_VERBOSE)
 		{
 		  Rprintf("r seeded with %i, first call is %f\n", apm_seed, RND);
@@ -938,7 +938,7 @@ List HyperTraPS(NumericMatrix obs, //NumericVector len_arg, NumericVector ntarg_
   if(full_analysis[0] == 0)
     return L;
   else
-    return PosteriorAnalysis(L, featurenames, R_NilValue, _regularise, _limited_output, _samples_per_row, _outputtransitions);
+    return PosteriorAnalysis(L, featurenames, _regularise, _limited_output, _samples_per_row, _outputtransitions);
 }
 
 // R version of posterior analysis
@@ -949,7 +949,6 @@ List HyperTraPS(NumericMatrix obs, //NumericVector len_arg, NumericVector ntarg_
 // [[Rcpp::export]]
 List PosteriorAnalysis(List L,
 		       Nullable<CharacterVector> featurenames = R_NilValue,
-		       Nullable<NumericVector> startstate = R_NilValue,
 		       int use_regularised = 0,
 		       int limited_output = 0,
 		       int samples_per_row = 10,
@@ -959,7 +958,6 @@ List PosteriorAnalysis(List L,
   int len, ntarg;
   double *trans, *ntrans;
   int t;
-  int prediction;
   int i, j;
   int *rec, *order;
   double *drec, *sortdrec, *mean;
@@ -983,15 +981,12 @@ List PosteriorAnalysis(List L,
   int model;
   int burnin, sampleperiod;
   char labelfile[1000];
-  int *sstate;
-  double *predictrate, predictnorm = 0;
   
   // default values
   BINSCALE = 10;
   verbose = 0;
   filelabel = 0;
   seed = 0;
-  prediction = 0;
   model = L["model"];
   burnin = 0;
   sampleperiod = 0;
@@ -1072,12 +1067,12 @@ List PosteriorAnalysis(List L,
   }
 
   // initialise and allocate a lot of different arrays to compute and store statistics
-  RNDSEED(seed);
+  srand48(seed);
   allruns  =0;
   ntarg = 0;
       
   NVAL = nparams(model, len);
-
+  
   matrix = (int*)malloc(sizeof(int)*10000);
   ctrec = (double*)malloc(sizeof(double)*MAXCT*len);
   times = (double*)malloc(sizeof(double)*len);
@@ -1094,9 +1089,7 @@ List PosteriorAnalysis(List L,
   order = (int*)malloc(sizeof(int)*len);
   drec = (double*)malloc(sizeof(double)*len*len);
   sortdrec = (double*)malloc(sizeof(double)*len*len);
-  predictrate = (double*)malloc(sizeof(double)*len);
-  sstate = (int*)malloc(sizeof(int)*len);
-  
+
   // initialise
   for(i = 0; i < MAXCT*len; i++)
     ctrec[i] = 0;
@@ -1113,17 +1106,6 @@ List PosteriorAnalysis(List L,
 
   if(!limited_output)
     Rprintf("Output label is %s\n", labelstr);
-
-  if(startstate.isUsable()) {
-    prediction = 1;
-    NumericVector _startstate(startstate);
-     
-    for(i = 0; i < len; i++) {
-      sstate[i] = _startstate[i];
-      predictrate[i] = 0;
-    }
-    predictnorm = 0;
-  }
     
   int NSAMPLES = ((posterior.nrow() - burnin)/(sampleperiod+1))*(samples_per_row);
   NumericMatrix route_out(NSAMPLES, len);
@@ -1180,31 +1162,6 @@ List PosteriorAnalysis(List L,
 		meanstore[i] = 0;
 	      // simulate behaviour on this posterior and add statistics to counts and histograms
 	      GetRoutes(matrix, len, ntarg, ntrans, rec, meanstore, ctrec, times, timediffs, betas, route, BINSCALE, model);
-	      // get prediction for next step in start state, if required
-	      if(prediction == 1)
-		{
-		  double nobiastotrate = 0;
-		  double rate[len];
-
-		  /* compute the rate of loss of gene i given the current genome -- without bias */
-		  for(i = 0; i < len; i++)
-		    {
-		      /* ntrans must be the transition matrix. ntrans[i+i*len] is the bare rate for i. then ntrans[j*len+i] is the modifier for i from j*/
-		      if(sstate[i] == 0)
-			{
-			  rate[i] = RetrieveEdge(sstate, i, ntrans, len, model);
-			}
-		      else /* we've already lost this gene */
-			rate[i] = 0;
-		      nobiastotrate += rate[i];
-		    }
-		  for(i = 0; i < len; i++)
-		    {
-		      predictrate[i] += rate[i]/nobiastotrate;
-		    }
-		  predictnorm++;
-		}
-	      
 	      for(i = 0; i < len; i++)
 		fmeanstore[i] += meanstore[i];
 	      ctnorm += NTRAJ;
@@ -1282,14 +1239,6 @@ List PosteriorAnalysis(List L,
 	}
     }
 
-  NumericVector predictrates(len);
-  if(prediction == 1) {
-    for(i = 0; i < len; i++)
-      {
-	predictrates[i] = predictrate[i]/predictnorm;
-      }
-  }
-  
   List BubbleL = List::create(Named("Time") = t_col,
 			      Named("ReorderedIndex") = i_col,
 			      Named("OriginalIndex") = order_col,
@@ -1330,7 +1279,6 @@ List PosteriorAnalysis(List L,
   OutputL["times"] = times_out;
   OutputL["timediffs"] = timediffs_out;
   OutputL["featurenames"] = fns;
-  OutputL["predictrates"] = predictrates;
 
   if(outputtransitions)
     {
