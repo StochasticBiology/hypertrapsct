@@ -909,6 +909,28 @@ prob.by.time = function(my.post, tau) {
   return(df)
 }
 
+fitted.state.probs = function(my.post,
+                              prob.set = NA) {
+  if(nrow(my.post$dynamics$states) > 0) {
+    if(is.na(sum(prob.set))) {
+      prob.set = rep(1/(my.post$L+1), my.post$L+1)
+    }
+    if(length(prob.set) != my.post$L+1 | sum(prob.set) != 1) {
+      message("Problem with specified probability profile for feature counts")
+      return(NULL)
+    }
+    state = unlist(lapply(my.post$dynamics$states$State, DecToBin, len=my.post$L))
+    n.features = unlist(lapply(state, str_count, pattern="1"))
+    df = data.frame(state=state,
+                    cond.prob = my.post$dynamics$states$Probability,
+                    prob = my.post$dynamics$states$Probability*prob.set[n.features+1])
+    return(df)
+  } else {
+    message("No state probability information found.")
+    return(NULL)
+  }
+}
+
 curate.tree = function(tree.src, data.src, 
                        losses = FALSE, data.header=TRUE,
                        enforce.root = TRUE) {
