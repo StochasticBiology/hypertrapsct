@@ -1453,6 +1453,41 @@ List RegulariseR(int *matrix, int len, int ntarg, double *ntrans, double *tau1s,
   
 }
 
+/*
+double getLikelihood(NumericVector obs,
+		     NumericVector params,
+		     NumericVector model,
+		     Nullable<NumericVector> initialstate = R_NilValue,
+		     Nullable<double> starttime = 0,
+		     Nullable<double> endtime = INFINITY)
+{
+  int _model;
+  double _tau1, _tau2;
+  int endpos[_MAXN], startpos[_MAXN];
+  int i;
+  int len;
+  double ntrans[100];
+  
+  _model = model[0];
+  _tau1 = starttime;
+  _tau2 = endtime;
+  len = obs.length();
+  
+  for(i = 0; i < len; i++)
+    endpost[i] = obs[i]
+    
+    if(initialstate.isUsable()) {
+    NumericVector _initialstate(initialstate);
+    for(i = 0; i < len; i++) {
+      startpos[i] = _initialstate[i];
+    }
+    }
+
+  LikelihoodMultiple(endpost, ntrans, len, startpos, _tau1, _tau2, _model);
+  //LikelihoodMultiple(&(matrix[2*i*len+len]), ntrans, len, startpos, tau1s[i], tau2s[i], _model);
+}
+*/
+
 //' Runs HyperTraPS-related inference on a dataset of observations
 //'
 //' @param matrix A matrix of observations. Should contain 0s, 1s, and optional 2s for missing data. Should be $n \times L$, containing $n$ cross-sectional observations of length $L$.
@@ -1672,11 +1707,11 @@ List HyperTraPS(NumericMatrix obs, //NumericVector len_arg, NumericVector ntarg_
       Rprintf("\nHyperTraPS(-CT)\n\nPlease cite Aga et al., PLoS Comput Biol 20 e1012393 (2024)\n\n");
 
       if(_PLI == 1) {
-	Rprintf("Running Phenotype Landscape Inference with:\n[observations-file]: %s\n[start-timings-file]: %s\n[end-timings-file]: %s\n[random number seed]: %i\n[length index]: %i\n[kernel index]: %i\n[walkers]: %i\n[losses (1) or gains (0)]: %i\n[APM]: %i\n[model]: %i\n[penalty]: %.3e\n[lasso]: %i\n\n", obsfile, timefile, endtimefile, _seed, _lengthindex, _kernelindex, BANK, _losses, _apm_type, _model, _penalty, _lasso);
+	Rprintf("Running Phenotype Landscape Inference with:\n[random number seed]: %i\n[length index]: %i\n[kernel index]: %i\n[walkers]: %i\n[losses (1) or gains (0)]: %i\n[APM]: %i\n[model]: %i\n[penalty]: %.3e\n[lasso]: %i\n\n", _seed, _lengthindex, _kernelindex, BANK, _losses, _apm_type, _model, _penalty, _lasso);
       } else if(spectrumtype == 1) {
-	Rprintf("Running HyperTraPS-CT with:\n[observations-file]: %s\n[start-timings-file]: %s\n[end-timings-file]: %s\n[random number seed]: %i\n[length index]: %i\n[kernel index]: %i\n[walkers]: %i\n[losses (1) or gains (0)]: %i\n[APM]: %i\n[model]: %i\n[penalty]: %.3e\n[lasso]: %i\n\n", obsfile, timefile, endtimefile, _seed, _lengthindex, _kernelindex, BANK, _losses, _apm_type, _model, _penalty, _lasso);
+	Rprintf("Running HyperTraPS-CT with:\n[random number seed]: %i\n[length index]: %i\n[kernel index]: %i\n[walkers]: %i\n[losses (1) or gains (0)]: %i\n[APM]: %i\n[model]: %i\n[penalty]: %.3e\n[lasso]: %i\n\n", _seed, _lengthindex, _kernelindex, BANK, _losses, _apm_type, _model, _penalty, _lasso);
       } else {
-	Rprintf("Running HyperTraPS with:\n[observations-file]: %s\n[random number seed]: %i\n[length index]: %i\n[kernel index]: %i\n[walkers]: %i\n[losses (1) or gains (0)]: %i\n[APM]: %i\n[model]: %i\n[penalty]: %.3e\n[lasso]: %i\n\n", obsfile, _seed, _lengthindex, _kernelindex, BANK, _losses, _apm_type, _model, _penalty, _lasso);
+	Rprintf("Running HyperTraPS with:\n[random number seed]: %i\n[length index]: %i\n[kernel index]: %i\n[walkers]: %i\n[losses (1) or gains (0)]: %i\n[APM]: %i\n[model]: %i\n[penalty]: %.3e\n[lasso]: %i\n\n", _seed, _lengthindex, _kernelindex, BANK, _losses, _apm_type, _model, _penalty, _lasso);
       }
 
       if(_penalty != 0 && _lasso != 0) {
