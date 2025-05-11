@@ -134,6 +134,105 @@ plotHypercube.bubbles.coarse = function(my.post, reorder=FALSE, transpose=FALSE,
   }
 }
 
+#' Comparison bubble plot
+#' 
+#' Instead of a "bubble" plot, make bubbles out of a collection of segments, one for each different inference run, so the (dis)agreement between runs can be visualised
+#' 
+#' @param my.post.list A list of fitted hypercubes returned from HyperTraPS
+#' @param reorder Whether to order features by mean acquisition; default FALSE
+#' @param transpose Whether to transpose the plot; default FALSE
+#' @param thetastep The number of discrete steps in a polygon approximating a circle segment; default 10 (higher gives smoother visuals but takes longer)
+#' @param p.scale A scaling factor relating probability to bubble radius; default 1
+#' @param sqrt.trans Whether to sqrt-transform the probabilities (giving more uniform bubble sizes); default FALSE
+#' @param bins The number of bins to group time-ordering into; default 0 (do not bin)
+#' @return a ggplot
+#' @export
+#' @examples
+#' observations <- matrix(c(0,0,0,
+#'                          0,0,1,
+#'                          0,1,1,
+#'                          1,1,1), byrow=TRUE, ncol=3)
+#' fitted.cube.1 <- HyperTraPS(observations, seed=1)
+#' fitted.cube.2 <- HyperTraPS(observations, seed=2)
+#' plotHypercube.bubbles.compare(list(fitted.cube.1, fitted.cube.2))
+plotHypercube.bubbles.compare = function(my.post.list, 
+                                         reorder=FALSE, transpose=FALSE, 
+                                         thetastep=10, p.scale = 1,
+                                         sqrt.trans = FALSE, 
+                                         bins = 0) {
+  # pass me a list of inference outputs; I'll do a pie-slice comparison of their bubble plots
+  # make sure they have the same features!
+  if(bins == 0) {
+    toplot = data.frame()
+    for(i in 1:length(my.post.list)) {
+      tmp = my.post.list[[i]]$bubbles
+      tmp$expt = i
+      toplot = rbind(toplot, tmp)
+    } 
+  } else {
+    toplot = data.frame()
+    for(i in 1:length(my.post.list)) {
+      tmp = my.post.list[[i]]$bubbles
+      
+      tmax = max(tmp$Time)
+      for(this.name in unique(tmp$OriginalIndex)) {
+        for(j in 0:(bins-1)) {
+          prob = sum(tmp$Probability[tmp$OriginalIndex==this.name & round((bins-1)*tmp$Time/tmax)==j])
+          toplot = rbind(toplot, data.frame(OriginalIndex = this.name, Time=j, Probability=prob, expt=i))
+        }
+      }
+    }
+  }
+  if(reorder == TRUE) {
+    toplot$Name = factor(toplot$Name, levels=unique(toplot$Name))
+  }
+  if(transpose == TRUE) {
+    toplot$x = toplot$Name
+    toplot$y = toplot$Time
+  } else {
+    toplot$x = toplot$Time
+    toplot$y = toplot$Name
+  }
+  
+  if(sqrt.trans==TRUE) {
+    toplot$Probability = sqrt(toplot$Probability)
+  }
+  
+  # construct dataframe for polygonal approximations of pie slices
+  polygons = data.frame()
+  for(i in 1:nrow(toplot)) {
+    thisx = as.numeric(toplot$x[i])
+    thisy = as.numeric(toplot$OriginalIndex[i])
+    thisz = toplot$Probability[i]*p.scale
+    
+    theta0 = 2*pi*(toplot$expt[i]-1)/max(toplot$expt)
+    dtheta = (2*pi/max(toplot$expt))/thetastep
+    theta = theta0
+    
+    # start the polygon at the x-y coordinate
+    tmp = data.frame()
+    tmp = rbind(tmp, data.frame(x1 = thisx, y1 = thisy, 
+                                ref = i, expt = toplot$expt[i])) 
+    # go round in steps of theta, building up the perimeter
+    for(j in 0:(thetastep)) {
+      theta = theta0+j*dtheta
+      tmp = rbind(tmp, data.frame(x1 = thisx + thisz*cos(theta),
+                                  y1 = thisy + thisz*sin(theta),
+                                  ref = i, expt = toplot$expt[i]))
+    }
+    
+    polygons = rbind(polygons, tmp)
+  }
+  
+  # plot the polygons, separated by coordinate and coloured by experiment
+  this.plot = ggplot2::ggplot(polygons, aes(x=polygons$x1, y=polygons$y1, group=polygons$ref, fill=factor(polygons$expt))) + ggplot2::geom_polygon() +
+    ggplot2::theme_light() + ggplot2::labs(fill="Experiment", x="Ordinal Time", y = "")
+  
+  return(this.plot)
+}
+
+
+
 #' Plot transition graph
 #' 
 #' Creates a plot
@@ -888,6 +987,7 @@ qgramdist = function(my.post.1, my.post.2) {
 #' fitted.cube <- HyperTraPS(observations)
 #' predictNextStep(fitted.cube, c(0,0,1))
 predictNextStep = function(my.post, state) {
+  # only works so far if the posterior structure has transition dynamics information
   # get this state reference and look up exit routes
   this.ref = BinToDec(state)
   out.edges = my.post$dynamics$trans[my.post$dynamics$trans$From==this.ref,]
@@ -1213,6 +1313,37 @@ prob.by.time = function(my.post, tau) {
   return(df)
 }
 
+#' Get state probabilities from a fitted model
+#' 
+#' Using a fitted model, return a dataframe with observation probabilities of each state, conditional on a given number of features having been acquired
+#' 
+#' @param my.post a fitted hypercubic model from HyperTraPS
+#' @param prob.set a vector of L+1 probabilities giving the probability that 0, 1, ..., L features have been acquired, upon which observation probabilities are then conditioned. Default NA assigns uniform probability to each acquisition number
+#' @return a dataframe containing state, observation probability conditional on exactly each state's number of features being acquired, observation probabilities assuming the given probability profiles
+#' @export
+fitted.state.probs = function(my.post,
+                              prob.set = NA) {
+  if(nrow(my.post$dynamics$states) > 0) {
+    if(is.na(sum(prob.set))) {
+      prob.set = rep(1/(my.post$L+1), my.post$L+1)
+    }
+    if(length(prob.set) != my.post$L+1 | sum(prob.set) != 1) {
+      message("Problem with specified probability profile for feature counts")
+      return(NULL)
+    }
+    state = unlist(lapply(my.post$dynamics$states$State, DecToBin, len=my.post$L))
+    n.features = unlist(lapply(state, str_count, pattern="1"))
+    df = data.frame(state=state,
+                    cond.prob = my.post$dynamics$states$Probability,
+                    prob = my.post$dynamics$states$Probability*prob.set[n.features+1])
+    return(df)
+  } else {
+    message("No state probability information found.")
+    return(NULL)
+  }
+}
+
+
 #' Reconstruct ancestral states and create an annotated tree
 #' 
 #' `curate.tree` reads a phylogeny from file in newick tree format and a 
@@ -1270,6 +1401,7 @@ curate.tree = function(tree.src, data.src, losses = FALSE, data.header=TRUE) {
   
   # initialise "recursive" algorithm
   change = T
+  my.data[,1] = as.character(my.data[,1])
   new.row = my.data[1,]
   changes = data.frame()
   
@@ -1313,7 +1445,8 @@ curate.tree = function(tree.src, data.src, losses = FALSE, data.header=TRUE) {
                                        to=paste0(my.data[d.row,2:ncol(new.data)], collapse=""),
                                        time=tree$edge.length[e.ref],
                                        from.node=this.label,
-                                       to.node=tree.labels[d.ref]))
+                                       to.node=tree.labels[d.ref],
+				       stringsAsFactors = FALSE))
           }
           # we made a change, so keep the loop going
           change = T
@@ -1321,6 +1454,35 @@ curate.tree = function(tree.src, data.src, losses = FALSE, data.header=TRUE) {
       }
     }
   }
+  # enforce root state of either 0^L (gains) or 1^L (losses), if it does not naturally emerge from the ancestral reconstruction
+  if(enforce.root == TRUE) {
+    if(losses == TRUE) {
+      initial_state = 1
+    } else {
+      initial_state = 0
+    }
+    root_node <- phytools::findMRCA(tree, tree$tip.label, type="node")
+    root_state = my.data[my.data$label == tree.labels[root_node],]
+    to.fix = FALSE
+    if(losses == FALSE & sum(root_state[2:ncol(root_state)]) != 0) {
+      message("Root state not implied to be 0^L... adding that transition")
+      to.fix = TRUE
+    }
+    if(losses == TRUE & sum(1-root_state[2:ncol(root_state)]) != 0) {
+      message("Root state not implied to be 1^L... adding that transition")
+      to.fix = TRUE
+    }
+    if(to.fix == TRUE) {
+      changes = rbind(changes, 
+                      data.frame(from=paste0(root_state[2:ncol(root_state)]*0 + initial_state, collapse=""),
+                               to=paste0(root_state[2:ncol(root_state)], collapse=""),
+                               time=1,
+                               from.node=-1,
+                               to.node=root_node,
+                               stringsAsFactors = FALSE))
+    }
+  }
+  
   srcs = matrix(as.numeric(unlist(lapply(changes$from, strsplit, split=""))), byrow=TRUE, ncol=ncol(new.data)-1)
   dests = matrix(as.numeric(unlist(lapply(changes$to, strsplit, split=""))), byrow=TRUE, ncol=ncol(new.data)-1)
   
@@ -1337,16 +1499,36 @@ curate.tree = function(tree.src, data.src, losses = FALSE, data.header=TRUE) {
 #' 
 #' Creates a plot
 #' 
-#' @param curated.tree combined phylogeny and feature data created with [curate.tree()]
+#' @param tree.set combined phylogeny and feature data created with [curate.tree()]
+#' @param scale_fn a scaling function from ggtree:geom_treescale (default provided)
+#' @param names whether to include tip names (default FALSE)
+#' @param font.size font size for feature names (default 4)
+#' @param hjust horizontal text justification for feature names (default 0)
+
 #' @return a ggplot
 #' @export
-plotHypercube.curated.tree = function(tree.set, scale.fn = geom_treescale(y=20, linesize=3, width =0.01)) {
+plotHypercube.curated.tree = function(tree.set,
+                                      scale.fn = ggtree::geom_treescale(y=20, linesize=3, width =0.01),
+				      names = FALSE,
+                                      font.size=4,
+                                      hjust=0) {
   data.m = tree.set$data[,2:ncol(tree.set$data)]
   rownames(data.m) = tree.set$data[,1]
   data.m = tree.set$data[1:length(tree.set$tree$tip.label), 2:ncol(tree.set$data)]
   rownames(data.m) = tree.set$data$label[1:length(tree.set$tree$tip.label)]
-  this.plot = ggtree::gheatmap(ggtree::ggtree(tree.set$tree) + scale.fn, data.m, low="white", high="#AAAAAA",
-                               colnames_angle=90, hjust=0) +
-    ggplot2::theme(legend.position="none")
+  # assign intermediate value to any "?" markers for missing data
+  data.m[which(data.m=="?", arr.ind = TRUE)] = 0.5
+  data.m = apply(data.m, c(1,2), as.numeric)
+  
+  g.core = ggtree::ggtree(tree.set$tree) + scale.fn
+  if(names == TRUE) {
+    g.core = ggtree::ggtree(tree.set$tree) + scale.fn + ggtree::geom_tiplab(size=3, alpha=0.8, nudge_y=0.4, hjust=1)
+  } else {
+    g.core = ggtree::ggtree(tree.set$tree) + scale.fn
+  }
+  this.plot = ggtree::gheatmap(g.core, data.m, low="white", high="#AAAAAA",
+                       colnames_angle=90, hjust=hjust, font.size=font.size) +
+              ggplot2::theme(legend.position="none")
+
   return(this.plot)
 }
