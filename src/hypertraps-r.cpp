@@ -1792,7 +1792,7 @@ List HyperTraPS(NumericMatrix obs, //NumericVector len_arg, NumericVector ntarg_
 
   if(filelabel == 0)
     {
-      sprintf(labelstr, "%s-%i-%i-%i-%i-%i-%i-%i", obsfile, spectrumtype, searchmethod, _seed, _lengthindex, _kernelindex, BANK, _apm_type);
+      sprintf(labelstr, "%s-%i-%i-%i-%.3f-%i-%i-%i", obsfile, spectrumtype, searchmethod, _seed, _lengthindex, _kernelindex, BANK, _apm_type);
     }
   
   // initialise with an agnostic transition matrix
