@@ -1356,9 +1356,12 @@ fitted.state.probs = function(my.post,
 #'  losses of features are considered.
 #' @param data.header defaults to TRUE. Determines Whether data.filename is
 #'  read with a header or not.
+#' @param enforce.root defaults to TRUE. If the ancestral state reconstructions assigns a root state that is not 0^L (for gains) or 1^L (for losses), explicitly set this to be the root state
 #' @return a list containing tree, data, transitions, srcs, dests and times
 #' @export
-curate.tree = function(tree.src, data.src, losses = FALSE, data.header=TRUE) {
+curate.tree = function(tree.src, data.src, 
+                       losses = FALSE, data.header=TRUE,
+                       enforce.root = TRUE) {
   if(is.character(tree.src)) {
     # read in Newick tree and root
     my.tree = ape::read.tree(tree.src)
