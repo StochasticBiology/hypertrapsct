@@ -28,7 +28,7 @@ HyperTraPS <- function(obs, initialstates = NULL, priors = NULL, starttimes = NU
 #' @param L List output from HyperTraPS, containing posterior samples
 #' @return Named list containing summary data for feature acquisition ordering ("bubbles"), time histograms, sampled accumulation routes, and timings of these sampled routes.
 #' @export
-PosteriorAnalysis <- function(L, featurenames = NULL, use_regularised = 0L, limited_output = 0L, samples_per_row = 10L) {
-    .Call('_hypertrapsct_PosteriorAnalysis', PACKAGE = 'hypertrapsct', L, featurenames, use_regularised, limited_output, samples_per_row)
+PosteriorAnalysis <- function(L, featurenames = NULL, startstate = NULL, use_regularised = 0L, limited_output = 0L, samples_per_row = 10L, outputtransitions = 0L) {
+    .Call('_hypertrapsct_PosteriorAnalysis', PACKAGE = 'hypertrapsct', L, featurenames, startstate, use_regularised, limited_output, samples_per_row, outputtransitions)
 }
 
