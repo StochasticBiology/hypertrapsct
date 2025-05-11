@@ -1332,7 +1332,7 @@ state.probs = function(my.post,
       return(NULL)
     }
     state = unlist(lapply(my.post$dynamics$states$State, DecToBin, len=my.post$L))
-    n.features = unlist(lapply(state, str_count, pattern="1"))
+    n.features = unlist(lapply(state, stringr::str_count, pattern="1"))
     df = data.frame(state=state,
                     cond.prob = my.post$dynamics$states$Probability,
                     prob = my.post$dynamics$states$Probability*prob.set[n.features+1])
