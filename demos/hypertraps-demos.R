@@ -1,6 +1,6 @@
 #################
 
-remotes::install_github("StochasticBiology/hypertraps-ct@bioconductor-tmp")
+remotes::install_github("StochasticBiology/hypertraps-ct@bioconductor")
 library(hypertrapsct)
 library(ggplot2)
 library(ggpubr)
@@ -109,6 +109,14 @@ my.post.l = HyperTraPS(m.2, initialstates = m.1,
 ## Example 4: other visualisations and analysis
 
 my.post = my.post.l
+
+# probabilities of different states
+# cond.prob gives P(state | exactly n features have been acquired, if state has n features)
+# prob gives P(state | probability that n features have been acquired = P_n)
+# by default, P_n = 1/(L+1), but can be specified otherwise to model different acquisition profiles
+state.probs(my.post)
+state.probs(my.post, prob.set = dbinom(0:5, 5, 0.25))
+
 # likelihood trace for checking
 plotHypercube.lik.trace(my.post)
 # sampled transition graph
