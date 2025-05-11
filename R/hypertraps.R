@@ -1327,7 +1327,7 @@ state.probs = function(my.post,
     if(is.na(sum(prob.set))) {
       prob.set = rep(1/(my.post$L+1), my.post$L+1)
     }
-    if(length(prob.set) != my.post$L+1 | abs(sum(prob.set)-1) > 1e-4)) {
+    if(length(prob.set) != my.post$L+1 | abs(sum(prob.set)-1) > 1e-4) {
       message("Problem with specified probability profile for feature counts")
       return(NULL)
     }
