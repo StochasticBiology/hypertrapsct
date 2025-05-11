@@ -1317,11 +1317,11 @@ prob.by.time = function(my.post, tau) {
 #' 
 #' Using a fitted model, return a dataframe with observation probabilities of each state, conditional on a given number of features having been acquired
 #' 
-#' @param my.post a fitted hypercubic model from HyperTraPS
-#' @param prob.set a vector of L+1 probabilities giving the probability that 0, 1, ..., L features have been acquired, upon which observation probabilities are then conditioned. Default NA assigns uniform probability to each acquisition number
-#' @return a dataframe containing state, observation probability conditional on exactly each state's number of features being acquired, observation probabilities assuming the given probability profiles
+#' @param my.post something
+#' @param prob.set something
+#' @return something
 #' @export
-fitted.state.probs = function(my.post,
+state.probs = function(my.post,
                               prob.set = NA) {
   if(nrow(my.post$dynamics$states) > 0) {
     if(is.na(sum(prob.set))) {
