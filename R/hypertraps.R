@@ -225,7 +225,7 @@ plotHypercube.bubbles.compare = function(my.post.list,
   }
   
   # plot the polygons, separated by coordinate and coloured by experiment
-  this.plot = ggplot2::ggplot(polygons, aes(x=polygons$x1, y=polygons$y1, group=polygons$ref, fill=factor(polygons$expt))) + ggplot2::geom_polygon() +
+  this.plot = ggplot2::ggplot(polygons, ggplot2::aes(x=polygons$x1, y=polygons$y1, group=polygons$ref, fill=factor(polygons$expt))) + ggplot2::geom_polygon() +
     ggplot2::theme_light() + ggplot2::labs(fill="Experiment", x="Ordinal Time", y = "")
   
   return(this.plot)
