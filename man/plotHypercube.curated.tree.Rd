@@ -4,10 +4,24 @@
 \alias{plotHypercube.curated.tree}
 \title{Visualize phylogenetic tree with features}
 \usage{
-plotHypercube.curated.tree(tree.set)
+plotHypercube.curated.tree(
+  tree.set,
+  scale.fn = ggtree::geom_treescale(y = 20, linesize = 3, width = 0.01),
+  names = FALSE,
+  font.size = 4,
+  hjust = 0
+)
 }
 \arguments{
-\item{curated.tree}{combined phylogeny and feature data created with [curate.tree()]}
+\item{tree.set}{combined phylogeny and feature data created with [curate.tree()]}
+
+\item{names}{whether to include tip names (default FALSE)}
+
+\item{font.size}{font size for feature names (default 4)}
+
+\item{hjust}{horizontal text justification for feature names (default 0)}
+
+\item{scale_fn}{a scaling function from ggtree:geom_treescale (default provided)}
 }
 \value{
 a ggplot

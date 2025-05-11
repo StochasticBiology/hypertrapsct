@@ -7,9 +7,11 @@
 PosteriorAnalysis(
   L,
   featurenames = NULL,
+  startstate = NULL,
   use_regularised = 0L,
   limited_output = 0L,
-  samples_per_row = 10L
+  samples_per_row = 10L,
+  outputtransitions = 0L
 )
 }
 \arguments{

@@ -27,10 +27,18 @@ a ggplot
 Creates a combined likelihood trace, bubble plot and sampledgraph.
 }
 \examples{
-observations <- matrix(c(0,0,0,
-                         0,0,1,
-                         0,1,1,
-                         1,1,1), byrow=TRUE, ncol=3)
-fitted.cube <- HyperTraPS(observations)
-plotHypercube.summary(fitted.cube, continuous.time = FALSE)
+ancestors   <- matrix(c(0,0,0,
+                        0,0,1), ncol=3)
+descendants <- matrix(c(0,1,1,
+                        1,1,1), ncol=3)
+start       <- c(0,1)
+end         <- c(2,5)
+featurenames = c("A", "B", "C")
+
+fitted.cube <- HyperTraPS(descendants, 
+                          initialstates = ancestors,
+                          starttimes = start,
+                          endtimes = end,
+                          featurenames = featurenames)
+plotHypercube.summary(fitted.cube)
 }
