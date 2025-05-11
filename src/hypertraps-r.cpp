@@ -2337,7 +2337,7 @@ List PosteriorAnalysis(List L,
   List tmp_dynamics_output, tmplist;
   int vecsize;
   if(outputtransitions)
-    vecsize = mypow2(len)*len;
+    vecsize = mypow2(len)*len / 2;
   else
     vecsize = 0;
 
