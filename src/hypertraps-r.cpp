@@ -3,7 +3,7 @@ using namespace Rcpp;
 #define _USE_CODE_FOR_R 1
 
 List PosteriorAnalysis(List L,
-		       Nullable<CharacterVector> featurenames_arg,
+		       Nullable<CharacterVector> featurenames,
 		       Nullable<NumericVector> startstate,
 		       int use_regularised,
 		       int limited_output,
