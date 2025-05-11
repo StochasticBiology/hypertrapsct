@@ -71,5 +71,8 @@ observations <- matrix(c(0,0,0,
                          0,1,1,
                          1,1,1), byrow=TRUE, ncol=3)
 fitted.cube <- HyperTraPS(observations)
-plotHypercube.sampledgraph2(fitted.cube, no.times = TRUE, use.timediffs = FALSE)
+plotHypercube.sampledgraph2(fitted.cube, 
+                            no.times = TRUE, 
+                            use.timediffs = FALSE, 
+                            node.labels = FALSE)
 }

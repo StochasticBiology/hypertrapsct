@@ -4,19 +4,27 @@
 \alias{curate.tree}
 \title{Reconstruct ancestral states and create an annotated tree}
 \usage{
-curate.tree(tree.filename, data.filename, losses = FALSE, data.header = TRUE)
+curate.tree(
+  tree.src,
+  data.src,
+  losses = FALSE,
+  data.header = TRUE,
+  enforce.root = TRUE
+)
 }
 \arguments{
-\item{tree.filename}{a file containing a phylogeny in newick-tree format}
-
-\item{data.filename}{a file with tip-labels in the first column and features
-in the remaining ones.}
-
 \item{losses}{defaults to FALSE. Determines whether irreversible gains or 
 losses of features are considered.}
 
 \item{data.header}{defaults to TRUE. Determines Whether data.filename is
 read with a header or not.}
+
+\item{enforce.root}{defaults to TRUE. If the ancestral state reconstructions assigns a root state that is not 0^L (for gains) or 1^L (for losses), explicitly set this to be the root state}
+
+\item{tree.filename}{a file containing a phylogeny in newick-tree format}
+
+\item{data.filename}{a file with tip-labels in the first column and features
+in the remaining ones.}
 }
 \value{
 a list containing tree, data, transitions, srcs, dests and times

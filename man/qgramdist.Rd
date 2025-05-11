@@ -22,11 +22,11 @@ observations.1 <- matrix(c(0,0,0,
                            0,0,1,
                            0,1,1,
                            1,1,1), byrow=TRUE, ncol=3)
-fitted.cube.1 <- HyperTraPS(observations)
+fitted.cube.1 <- HyperTraPS(observations.1)
 observations.2 <- matrix(c(0,0,0,
                            1,0,0,
                            1,1,0,
                            1,1,1), byrow=TRUE, ncol=3)
-fitted.cube.2 <- HyperTraPS(observations)
-plotHypercube.bubbles(fitted.cube.1, fitted.cube.2)
+fitted.cube.2 <- HyperTraPS(observations.2)
+qgramdist(fitted.cube.1, fitted.cube.2)
 }
