@@ -47,24 +47,26 @@ BEGIN_RCPP
 END_RCPP
 }
 // PosteriorAnalysis
-List PosteriorAnalysis(List L, Nullable<CharacterVector> featurenames, int use_regularised, int limited_output, int samples_per_row);
-RcppExport SEXP _hypertrapsct_PosteriorAnalysis(SEXP LSEXP, SEXP featurenamesSEXP, SEXP use_regularisedSEXP, SEXP limited_outputSEXP, SEXP samples_per_rowSEXP) {
+List PosteriorAnalysis(List L, Nullable<CharacterVector> featurenames, Nullable<NumericVector> startstate, int use_regularised, int limited_output, int samples_per_row, int outputtransitions);
+RcppExport SEXP _hypertrapsct_PosteriorAnalysis(SEXP LSEXP, SEXP featurenamesSEXP, SEXP startstateSEXP, SEXP use_regularisedSEXP, SEXP limited_outputSEXP, SEXP samples_per_rowSEXP, SEXP outputtransitionsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< List >::type L(LSEXP);
     Rcpp::traits::input_parameter< Nullable<CharacterVector> >::type featurenames(featurenamesSEXP);
+    Rcpp::traits::input_parameter< Nullable<NumericVector> >::type startstate(startstateSEXP);
     Rcpp::traits::input_parameter< int >::type use_regularised(use_regularisedSEXP);
     Rcpp::traits::input_parameter< int >::type limited_output(limited_outputSEXP);
     Rcpp::traits::input_parameter< int >::type samples_per_row(samples_per_rowSEXP);
-    rcpp_result_gen = Rcpp::wrap(PosteriorAnalysis(L, featurenames, use_regularised, limited_output, samples_per_row));
+    Rcpp::traits::input_parameter< int >::type outputtransitions(outputtransitionsSEXP);
+    rcpp_result_gen = Rcpp::wrap(PosteriorAnalysis(L, featurenames, startstate, use_regularised, limited_output, samples_per_row, outputtransitions));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
     {"_hypertrapsct_HyperTraPS", (DL_FUNC) &_hypertrapsct_HyperTraPS, 26},
-    {"_hypertrapsct_PosteriorAnalysis", (DL_FUNC) &_hypertrapsct_PosteriorAnalysis, 5},
+    {"_hypertrapsct_PosteriorAnalysis", (DL_FUNC) &_hypertrapsct_PosteriorAnalysis, 7},
     {NULL, NULL, 0}
 };
 
