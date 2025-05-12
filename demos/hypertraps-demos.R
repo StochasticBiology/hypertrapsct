@@ -106,7 +106,7 @@ my.post.l = HyperTraPS(m.2, initialstates = m.1,
                        featurenames = c("A", "B", "C", "D", "E")); 
 
 #####
-## Example 4: other visualisations and analysis
+## Example 5: other visualisations and analysis
 
 my.post = my.post.l
 
@@ -116,6 +116,11 @@ my.post = my.post.l
 # by default, P_n = 1/(L+1), but can be specified otherwise to model different acquisition profiles
 state.probs(my.post)
 state.probs(my.post, prob.set = dbinom(0:5, 5, 0.25))
+
+# likelihood associated with a particular observation, from the final posterior sample parameterisation
+r = nrow(my.post$posterior.samples)
+getLikelihood(c(1,0,0,0,0), my.post$posterior.samples[r,], model=2)
+getLikelihood(c(1,0,0,0,1), my.post$posterior.samples[r,], model=2)
 
 # likelihood trace for checking
 plotHypercube.lik.trace(my.post)
