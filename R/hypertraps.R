@@ -1566,3 +1566,42 @@ plotHypercube.curated.tree = function(tree.set,
 
   return(this.plot)
 }
+
+#' HyperTraPS demonstration
+#' 
+#' Test HyperTraPS functionality by performing a fit on synthetic data and reporting a summary
+#' 
+#' @return a ggplot
+#' @export
+demo.HyperTraPS = function() {
+  # synthetic matrix of observations
+  m.2 = matrix(rep(c(1,0,0,0,0,
+                     1,1,0,0,0,
+                     1,1,1,0,0,
+                     1,1,1,1,0,
+                     1,1,1,1,1,
+                     0,0,0,0,1,
+                     0,0,0,1,1,
+                     0,0,1,1,1,
+                     0,1,1,1,1,
+                     1,1,1,1,1),5), byrow=TRUE, ncol=5)
+  
+  # now let's imagine those observations are embedded on a phylogeny
+  # create a dataframe containing the same data but with unique IDs for each observation
+  df.1 = data.frame(id = paste("id_", 1:nrow(m.2), sep=""))
+  df.1 = cbind(df.1, m.2)
+  # create a random tree with the same set of IDs for the tips. this could equally well be read in from a file
+  tree.1 = ape::rtree(n = nrow(m.2))
+  tree.1$tip.label = df.1$id
+  # "curate.tree" reconstructs ancestral states based on rare, irreversible transitions and provides the input needed for HyperTraPS
+  ct.1 = curate.tree(tree.1, df.1)
+  
+  # now do the inference accounting for the phylogenetic relationships
+  my.post.tree = HyperTraPS(ct.1$dests, initialstates = ct.1$srcs)
+  
+  # pull everything into a summary plot
+  demo.plot = ggpubr::ggarrange(  plotHypercube.curated.tree(ct.1, names=TRUE),
+  plotHypercube.summary(my.post.tree), nrow = 2)
+  
+  return(demo.plot)
+}
