@@ -10,6 +10,22 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// getLikelihood
+double getLikelihood(NumericVector obs, NumericVector params, NumericVector model, Nullable<NumericVector> initialstate, Nullable<NumericVector> starttime, Nullable<NumericVector> endtime);
+RcppExport SEXP _hypertrapsct_getLikelihood(SEXP obsSEXP, SEXP paramsSEXP, SEXP modelSEXP, SEXP initialstateSEXP, SEXP starttimeSEXP, SEXP endtimeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type obs(obsSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type model(modelSEXP);
+    Rcpp::traits::input_parameter< Nullable<NumericVector> >::type initialstate(initialstateSEXP);
+    Rcpp::traits::input_parameter< Nullable<NumericVector> >::type starttime(starttimeSEXP);
+    Rcpp::traits::input_parameter< Nullable<NumericVector> >::type endtime(endtimeSEXP);
+    rcpp_result_gen = Rcpp::wrap(getLikelihood(obs, params, model, initialstate, starttime, endtime));
+    return rcpp_result_gen;
+END_RCPP
+}
 // HyperTraPS
 List HyperTraPS(NumericMatrix obs, Nullable<NumericMatrix> initialstates, Nullable<NumericMatrix> priors, Nullable<NumericVector> starttimes, Nullable<NumericVector> endtimes, NumericVector length, NumericVector kernel, NumericVector samplegap, NumericVector losses, NumericVector apm_type, NumericVector sa, NumericVector sgd, NumericVector sgd_scale, NumericVector seed, NumericVector outputinput, NumericVector regularise, NumericVector penalty, NumericVector lasso, NumericVector model, NumericVector pli, NumericVector walkers, NumericVector full_analysis, NumericVector limited_output, NumericVector output_transitions, NumericVector samples_per_row, Nullable<CharacterVector> featurenames);
 RcppExport SEXP _hypertrapsct_HyperTraPS(SEXP obsSEXP, SEXP initialstatesSEXP, SEXP priorsSEXP, SEXP starttimesSEXP, SEXP endtimesSEXP, SEXP lengthSEXP, SEXP kernelSEXP, SEXP samplegapSEXP, SEXP lossesSEXP, SEXP apm_typeSEXP, SEXP saSEXP, SEXP sgdSEXP, SEXP sgd_scaleSEXP, SEXP seedSEXP, SEXP outputinputSEXP, SEXP regulariseSEXP, SEXP penaltySEXP, SEXP lassoSEXP, SEXP modelSEXP, SEXP pliSEXP, SEXP walkersSEXP, SEXP full_analysisSEXP, SEXP limited_outputSEXP, SEXP output_transitionsSEXP, SEXP samples_per_rowSEXP, SEXP featurenamesSEXP) {
@@ -65,6 +81,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_hypertrapsct_getLikelihood", (DL_FUNC) &_hypertrapsct_getLikelihood, 6},
     {"_hypertrapsct_HyperTraPS", (DL_FUNC) &_hypertrapsct_HyperTraPS, 26},
     {"_hypertrapsct_PosteriorAnalysis", (DL_FUNC) &_hypertrapsct_PosteriorAnalysis, 7},
     {NULL, NULL, 0}
