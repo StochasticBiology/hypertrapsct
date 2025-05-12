@@ -1480,6 +1480,7 @@ double getLikelihood(NumericVector obs,
   double lik;
   
   _model = model[0];
+  len = obs.length();
   if(starttime.isUsable() && endtime.isUsable())
     {
       NumericVector _starttime(starttime);
