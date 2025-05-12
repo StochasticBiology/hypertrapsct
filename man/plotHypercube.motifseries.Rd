@@ -7,7 +7,7 @@
 plotHypercube.motifseries(my.post, t.set = 0, thresh = 0.05, label.size = 3)
 }
 \arguments{
-\item{my.post}{A fitted hypercube returned from HyperTraPS.}
+\item{my.post}{A model fit returned from HyperTraPS.}
 
 \item{t.set}{A numeric vector of times to visualize.}
 
@@ -20,8 +20,7 @@ to display. Defaults to 0.05.}
 a ggplot
 }
 \description{
-Creates a plot
-plot genotype probabilities at a given set of times as a "motif" plot
+Creates a plot of genotype probabilities at a given set of times, as a "motif" plot
 }
 \examples{
 observations <- matrix(c(0,0,0,

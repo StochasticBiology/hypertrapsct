@@ -34,36 +34,60 @@ HyperTraPS(
 )
 }
 \arguments{
-\item{initialstates}{An optional matrix of initial states. If we are using longitudinal observations, each row in this matrix gives the "before" state to the corresponding "after" state in the observations matrix. Omitting this matrix is equivalent to consider every observation to have a root "before" state. If specified, should be $n \times L$, containing $n$ cross-sectional observations of length $L$, to match the observations matrix.}
+\item{obs}{A (required) matrix of observations. Should contain 0s, 1s, and optional 2s for missing data. Should be n x L, containing n cross-sectional observations of length L.}
 
-\item{losses}{Whether to consider accumulation of gains (0) or losses (1)}
+\item{initialstates}{An optional matrix of initial states. If we are using longitudinal observations, each row in this matrix gives the "before" state to the corresponding "after" state in the observations matrix. Omitting this matrix is equivalent to consider every observation to have a root "before" state. If specified, should be n x L, containing n cross-sectional observations of length L, to match the observations matrix.}
 
-\item{apm_type}{APM}
+\item{priors}{Prior details for the parameters. Should be an N x 2 matrix, where N is the number of parameters for the chosen model structure. The two columns give the lower and upper bounds of a uniform prior distribution in log space for each parameter.}
 
-\item{sgd_scale}{SGD}
+\item{starttimes}{An optional vector of n times describing the beginning of the observation time window for each observation. If empty, equivalent to this time window beginning at time 0. If specified, should be of length n.}
 
-\item{seed}{Random number seed}
+\item{endtimes}{An optional vector of n times describing the end of the observation time window for each observation. If empty, equivalent to this time window ending at time infinity. If specified, should be of length n.}
 
-\item{outputinput}{Option to output the input data}
+\item{length}{log10(length of MCMC chain). For example, 6 would give a chain of length 10^6. Default 3.}
 
-\item{regularise}{Regularise}
+\item{kernel}{Kernel index. 1: with probability 0.1 per parameter, apply kernel width 0.005. 2-7: apply kernel to each parameter, with width 0.01 (2), 0.05 (3), 0.1 (4), 0.25 (5), 0.5 (6), 0.75 (7). Default 5.}
 
-\item{model}{Model structure}
+\item{samplegap}{Number of MCMC steps between parameter samples that are treated as posterior samples. Higher values guard against correlated sampling. Default is 1000 for chain lengths over 1e4; 100 over 1e2; 1 otherwise.}
 
-\item{pli}{Phenotype landscape inference}
+\item{losses}{Whether to consider accumulation of gains (0) or losses (1). Default 0.}
 
-\item{matrix}{A matrix of observations. Should contain 0s, 1s, and optional 2s for missing data. Should be $n \times L$, containing $n$ cross-sectional observations of length $L$.}
+\item{apm_type}{Whether to use auxiliary pseudo-marginal MCMC (1) or not (0). APM is more computationally expensive but can help stop the MCMC chain getting stuck because of rare extreme likelihood estimates. Default 0.}
 
-\item{start_times}{An optional vector of $n$ times describing the beginning of the observation time window for each observation. If empty, equivalent to this time window beginning at time 0. If specified, should be of length $n$.}
+\item{sa}{Whether to use simulated annealing (1) or not (0). Default 0.}
 
-\item{end_times}{An optional vector of $n$ times describing the end of the observation time window for each observation. If empty, equivalent to this time window ending at time infinity. If specified, should be of length $n$.}
+\item{sgd}{Whether to use stochastic gradient descent (1) or not (0). Default 0.}
 
-\item{length_index}{Length of MCMC chain}
+\item{sgd_scale}{If using SGD, how much to scale the gradient to determine the next step. Default 0.01.}
 
-\item{kernel_index}{Kernel index}
+\item{seed}{Random number seed. Default 1.}
+
+\item{outputinput}{Option to output the input data to the terminal for debugging (1) or not (0). Default 0.}
+
+\item{regularise}{Whether, after the MCMC chain completes, to regularise the final parameterisation by AIC-based pruning (1) or not (0). Default 0.}
+
+\item{penalty}{Penalty term in penalised likelihood, multiplying the number of nonzero parameters. Default 0.}
+
+\item{lasso}{LASSO penalty term in likelihood, multiplying the summed magnitude of parameters. Default 0.}
+
+\item{model}{Model structure. -1: every transition in dependently parameterised. 1: every feature independently acquired. 2: each feature acquisition independently influence other feature rates (pairwise). 3: pairs of feature acquisitions can non-additively influence other acquisitions. 4: triplets of acquisitions can non-additively influence other acquisitions. Default 2.}
+
+\item{pli}{Whether to use phenotype landscape inference (1) or HyperTraPS (0) for likelihood sampling. PLI applies no bias to the sampling walkers, reducing efficiency. Included for back-compatibility. Default 0.}
+
+\item{walkers}{Number of random walkers to use in estimating likelihood with HyperTraPS. Higher numbers take more time but will give more consistent and reliable likelihood estimates. Default 200.}
+
+\item{full_analysis}{Whether to follow the MCMC process with an analysis of the posterior dynamics (1) or just return the MCMC output (0). Default 1.}
+
+\item{limited_output}{Whether to produce more limited terminal output (1) or usual (0). Default 0.}
+
+\item{output_transitions}{Whether to output probabilities for each transition in the model space (1) or not (0). Default is 1, but will be switched off for L > 15 because the model space is huge. (Transitions can always be reconstructed from posterior parameter samples)}
+
+\item{samples_per_row}{In the post-MCMC analysis, how many simulations to run for each posterior sample, in order to characterise that sample behaviour. Default 10.}
+
+\item{featurenames}{Character vector containing the names of the different features.}
 }
 \value{
-A named list of objects from the inference process, containing parameter samples from the inference process, the maximum likelihood parameterisation, likelihood samples, and the sampling times.
+A HyperTraPS model fit: a named list of objects from the inference process, containing parameter samples from the inference process, the maximum likelihood parameterisation, likelihood samples, and the sampling times.
 }
 \description{
 Runs HyperTraPS-related inference on a dataset of observations

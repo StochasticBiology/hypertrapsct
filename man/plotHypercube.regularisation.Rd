@@ -7,13 +7,13 @@
 plotHypercube.regularisation(my.post)
 }
 \arguments{
-\item{my.post}{A fitted hypercube returned from HyperTraPS}
+\item{my.post}{A model fit returned from HyperTraPS, including the regularisation process}
 }
 \value{
 a ggplot
 }
 \description{
-Creates a plot
+Creates a plot describing the process of regularisation by parameter pruning.
 }
 \examples{
 observations <- matrix(c(0,0,0,

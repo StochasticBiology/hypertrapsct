@@ -2,7 +2,7 @@
 % Please edit documentation in R/hypertraps.R
 \name{plotHypercube.bubbles.coarse}
 \alias{plotHypercube.bubbles.coarse}
-\title{Binned acquisition ordering}
+\title{Bubble plot for acquisition ordering, binned version}
 \usage{
 plotHypercube.bubbles.coarse(
   my.post,
@@ -12,19 +12,25 @@ plotHypercube.bubbles.coarse(
 )
 }
 \arguments{
-\item{my.post}{A fitted hypercube returned from HyperTraPS}
+\item{my.post}{a model fit returned from HyperTraPS}
 
-\item{reorder}{Logical. Defaults to FALSE.}
+\item{reorder}{logical, whether to reorder features by their mean ordering; default FALSE}
 
-\item{transpose}{Logical. Defaults to FALSE.}
+\item{transpose}{logical, whether to transpose the axes of the plot; default FALSE}
 
-\item{bins}{Numeric. Defaults to 5.}
+\item{bins}{numeric, number of ordering bins to use. Defaults to 5.}
 }
 \value{
-a ggplot
+a ggplot object
 }
 \description{
-Creates a plot
+Creates a plot summarising the ordering of feature acquisitions in a fitted HyperTraPS
+model. The circle at ordering i for feature j gives the probability that feature j is
+acquired in ordering bin i in an evolutionary process starting with no features and proceeding
+to all features. Ordering bins contain sets of specific orderings.
+}
+\details{
+Can be useful to summarise dynamics when there are lots of features.
 }
 \examples{
 observations <- matrix(c(0,0,0,

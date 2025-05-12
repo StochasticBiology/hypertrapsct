@@ -12,7 +12,7 @@ plotHypercube.summary(
 )
 }
 \arguments{
-\item{my.post}{A fitted hypercube returned from [HyperTraPS()]}
+\item{my.post}{A model fit returned from [HyperTraPS()]}
 
 \item{f.thresh}{Lower threshold passed to [plotHypercube.sampledgraph2()]}
 

@@ -7,13 +7,19 @@
 plotHypercube.lik.trace(my.post)
 }
 \arguments{
-\item{my.post}{A fitted hypercube returned from HyperTraPS}
+\item{my.post}{a model fit returned from HyperTraPS}
 }
 \value{
-a ggplot
+a ggplot object containing the diagnostic trace
 }
 \description{
-Creates a plot
+Creates a plot of likelihood throughout an inference run, for diagnostics. The working likelihoods
+is the red line; two independent refits are given by black dashed lines. We want the three lines
+to overlap (converged likelihood estimate), have constant mean (MCMC run converged), and have no
+periods of stasis (MCMC run not frozen).
+}
+\details{
+If these conditions are not met, consider respectively more walkers, longer runs, smaller kernel.
 }
 \examples{
 observations <- matrix(c(0,0,0,

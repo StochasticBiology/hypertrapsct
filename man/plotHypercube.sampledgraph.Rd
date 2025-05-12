@@ -2,7 +2,7 @@
 % Please edit documentation in R/hypertraps.R
 \name{plotHypercube.sampledgraph}
 \alias{plotHypercube.sampledgraph}
-\title{Transition graph plot}
+\title{Visualise transition graph from sampling (old version)}
 \usage{
 plotHypercube.sampledgraph(
   my.post,
@@ -13,15 +13,15 @@ plotHypercube.sampledgraph(
 )
 }
 \arguments{
-\item{my.post}{A fitted hypercube returned from HyperTraPS}
+\item{my.post}{A model fit returned from HyperTraPS}
 
-\item{max.samps}{A numeric. Number of trajectories to plot. Defaults to 1000.}
+\item{max.samps}{A numeric. Number of trajectories to simulate to construct network estimate. Defaults to 1000.}
 
 \item{thresh}{A numeric from 0 to 1. Lower flux threshold to display. Defaults to 0.05.}
 
 \item{node.labels}{Logical. Whether to display node labels. Defaults to TRUE.}
 
-\item{node.label.size}{A numeric. Defaults to 2}
+\item{node.label.size}{A numeric. Text size for node labels. Defaults to 2}
 }
 \value{
 a ggplot

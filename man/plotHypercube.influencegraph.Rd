@@ -2,7 +2,7 @@
 % Please edit documentation in R/hypertraps.R
 \name{plotHypercube.influencegraph}
 \alias{plotHypercube.influencegraph}
-\title{Visualize pairwise influences}
+\title{Visualize pairwise influences (graph)}
 \usage{
 plotHypercube.influencegraph(
   my.post,
@@ -16,27 +16,27 @@ plotHypercube.influencegraph(
 )
 }
 \arguments{
-\item{my.post}{A fitted hypercube returned from HyperTraPS.}
+\item{my.post}{A model fit returned from HyperTraPS.}
 
-\item{featurenames}{A character vector of length L. Optional}
+\item{featurenames}{Either logical (TRUE = use names from model fit), or a character vector of feature names. Default TRUE.}
 
-\item{use.regularised}{A logical. Defaults to FALSE}
+\item{use.regularised}{Logical, whether to use the regularised (by parameter pruning) parameterisation. Defaults to FALSE.}
 
-\item{use.final}{A logical. Defaults to FALSE.}
+\item{use.final}{Logical, whether to use only the final parameterisation. Makes sense for point estimates (e.g. from simulated annealing), not for Bayesian posteriors. Defaults to FALSE.}
 
-\item{thresh}{A numeric describing the threshold. Defaults to 0.05}
+\item{thresh}{A numeric describing the threshold strength of an interaction to be plotted. Defaults to 0.05}
 
-\item{cv.thresh}{A numeric describing the upper bound. Defaults to Inf}
+\item{cv.thresh}{Numeric. Upper threshold of CV for interactions to be plotted. Defaults to Inf.}
 
 \item{label.size}{A numeric describing label size in mm. Defaults to 2}
 
-\item{red.green}{A logical.}
+\item{red.green}{A logical controlling red-green colour palette. Default FALSE.}
 }
 \value{
 a ggplot
 }
 \description{
-plot pairwise influences between features in the L^2 or L^3 picture
+plot pairwise influences between features in the L^2 or L^3 picture, as a graph
 }
 \examples{
 observations <- matrix(c(0,0,0,

@@ -2,18 +2,26 @@
 % Please edit documentation in R/hypertraps.R
 \name{plotHypercube.bubbles}
 \alias{plotHypercube.bubbles}
-\title{Acquisition ordering}
+\title{Bubble plot for acquisition ordering}
 \usage{
 plotHypercube.bubbles(my.post, reorder = FALSE, transpose = FALSE)
 }
 \arguments{
-\item{my.post}{A fitted hypercube returned from HyperTraPS}
+\item{my.post}{a model fit returned from HyperTraPS}
+
+\item{reorder}{logical, whether to reorder features by their mean ordering; default FALSE}
+
+\item{transpose}{logical, whether to transpose the axes of the plot; default FALSE}
 }
 \value{
-a ggplot
+a ggplot object
 }
 \description{
-Creates a plot
+Creates a plot summarising the ordering of feature acquisitions in a fitted HyperTraPS
+model. The circle at ordering i for feature j gives the probability that feature j is
+acquired at order i in an evolutionary process starting with no features and proceeding
+to all features. For example, P = 0.2 at i = 3, j = 2 means there is a 0.2 probability that
+feature 2 is the third to be acquired.
 }
 \examples{
 observations <- matrix(c(0,0,0,

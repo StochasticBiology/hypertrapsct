@@ -13,23 +13,31 @@ curate.tree(
 )
 }
 \arguments{
+\item{tree.src}{either a tree, or a filename containing a phylogeny in newick-tree format}
+
+\item{data.src}{either a dataframe or a filename containing a CSV dataframe. 
+The first column should contain IDs corresponding to the tip.labels of the tree. 
+The subsequent columns should contain the 0s and 1s describing that individual's presence/absence profile.}
+
 \item{losses}{defaults to FALSE. Determines whether irreversible gains or 
 losses of features are considered.}
 
 \item{data.header}{defaults to TRUE. Determines Whether data.filename is
 read with a header or not.}
 
-\item{enforce.root}{defaults to TRUE. If the ancestral state reconstructions assigns a root state that is not 0^L (for gains) or 1^L (for losses), explicitly set this to be the root state}
-
-\item{tree.filename}{a file containing a phylogeny in newick-tree format}
-
-\item{data.filename}{a file with tip-labels in the first column and features
-in the remaining ones.}
+\item{enforce.root}{defaults to TRUE. If the ancestral state reconstructions assigns a root state that is 
+not 0^L (for gains) or 1^L (for losses), explicitly set this to be the root state}
 }
 \value{
 a list containing tree, data, transitions, srcs, dests and times
 }
 \description{
-`curate.tree` reads a phylogeny from file in newick tree format and a 
-csv-file containing tip-labels and features.
+Convert phylogenetically-embedded data into transitions that can be input to
+HyperTraPS.
+}
+\details{
+`curate.tree` takes a phylogeny (either from phytools or from a filename) and 
+a dataframe of feature profiles on the tree tips (either as a dataframe or as
+a filename), reconstructs ancestral states given an assumption of rare, irreversible
+dynamics, and returns the inferred set of transitions between states.
 }

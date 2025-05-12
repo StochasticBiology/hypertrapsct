@@ -7,12 +7,12 @@
 state.probs(my.post, prob.set = NA)
 }
 \arguments{
-\item{my.post}{something}
+\item{my.post}{a model fit returned from HyperTraPS}
 
-\item{prob.set}{something}
+\item{prob.set}{A numeric vector of length L+1 and with total 1, describing the probability that 0, 1, ..., L features have been acquired. Defaults to NA, which imposes uniform probabilities from 0 to L.}
 }
 \value{
-something
+a dataframe containing states and two conditional observation probabilities. The first is the probability of seeing state i given that exactly i's number of features have been acquired. The second is the probability of state i given the specified profile of feature acquisitions.
 }
 \description{
 Using a fitted model, return a dataframe with observation probabilities of each state, conditional on a given number of features having been acquired

@@ -7,9 +7,9 @@
 predictNextStep(my.post, state)
 }
 \arguments{
-\item{my.post}{A fitted hypercube returned from HyperTraPS}
+\item{my.post}{A model fit returned from HyperTraPS}
 
-\item{state}{A numeric vector of 1s and 0s.}
+\item{state}{A numeric vector of 1s and 0s, giving the state from which a prediction should be made.}
 }
 \value{
 A data frame of states and probabilities for the next step

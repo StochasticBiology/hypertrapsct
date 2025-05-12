@@ -13,7 +13,7 @@ dataLevels(data.mat)
 A data frame containing counts for each level of the hypercube
 }
 \description{
-get the representation of different hypercube levels in a dataset
+get the representation of different hypercube levels (acquired feature counts) in a dataset
 }
 \examples{
 observations <- matrix(c(0,0,0,

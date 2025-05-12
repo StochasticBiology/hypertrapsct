@@ -11,6 +11,8 @@ predictHiddenVals(my.post, state, level.weight = 1)
 
 \item{state}{An integer vector detailing the state to impute. Hidden values 
 are denoted with 2.}
+
+\item{level.weight}{Relative probabilities of different numbers of feature acquisitions, from 0 to L. Predictions will be conditional on this weighting. Default 1.}
 }
 \value{
 A list containing two data frames: state.probs and locus.probs.
