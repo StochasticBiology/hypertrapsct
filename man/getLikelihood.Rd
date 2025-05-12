@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{getLikelihood}
 \alias{getLikelihood}
-\title{Get likelihood for an observation, given a fitted model}
+\title{Get likelihood for an observation, given a model parameterisation}
 \usage{
 getLikelihood(
   obs,
@@ -14,21 +14,21 @@ getLikelihood(
 )
 }
 \arguments{
-\item{obs}{XXX}
+\item{obs}{a numeric vector giving the observation}
 
-\item{params}{XXX}
+\item{params}{a numeric vector giving the parameterisation}
 
-\item{model}{XXX}
+\item{model}{the model to use (-1, 1, 2, 3, 4)}
 
-\item{initialstate}{XXX}
+\item{initialstate}{optional: initial state for a transition to the "obs" state (default 0^L)}
 
-\item{starttime}{XXX}
+\item{starttime}{optional: starting time for the time window for this transition}
 
-\item{endtime}{XXX}
+\item{endtime}{optional: end time for the time window for this transition}
 }
 \value{
-the likelihood
+the likelihood associated with this observation
 }
 \description{
-Get likelihood for an observation, given a fitted model
+Get likelihood for an observation, given a model parameterisation
 }
