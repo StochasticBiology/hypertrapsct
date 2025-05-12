@@ -16,10 +16,7 @@ General content
 Requirements
 ------
 
-For the version without helper and plotting functions, you'll need R and the `Rcpp` library.
-
-For those helper and plotting functions, you'll need R with these libraries for full functionality: `Rcpp`, `ggplot2`, `ggpubr`, `ggraph`, `ggwordcloud`, `igraph`, `stringr`, `stringdist`, `phangorn`, `phytools`, `ggtree`, `parallel`.
-
+HyperTraPS-CT is an R package with dependencies: `Rcpp`, `ggplot2`, `ggpubr`, `ggraph`, `ggwordcloud`, `igraph`, `stringr`, `stringdist`, `phangorn`, `phytools`, `ggtree`, `parallel`.
 
 Input
 ------
@@ -93,7 +90,7 @@ A good place to start is `demos/hypertraps-demos.R`, where the basic form of R c
 Arguments to HyperTraPS
 ------
 
-HyperTraPS needs at least a set of observations. *This is the only essential input.* In R this should take the form of a matrix; on the command line it should be stored in a file. The table below gives other inputs that can be provided, with more technical points appearing in lower sections.
+HyperTraPS needs at least a set of observations. *This is the only essential input.* This should take the form of a matrix. The table below gives other inputs that can be provided, with more technical points appearing in lower sections.
 
 | Argument | R | Default |
 |----------|---|----------|
