@@ -1453,40 +1453,73 @@ List RegulariseR(int *matrix, int len, int ntarg, double *ntrans, double *tau1s,
   
 }
 
-/*
+//' Get likelihood for an observation, given a model parameterisation
+//'
+//' @param obs a numeric vector giving the observation
+//' @param params a numeric vector giving the parameterisation
+//' @param model the model to use (-1, 1, 2, 3, 4)
+//' @param initialstate optional: initial state for a transition to the "obs" state (default 0^L)
+//' @param starttime optional: starting time for the time window for this transition
+//' @param endtime optional: end time for the time window for this transition
+//' @return the likelihood associated with this observation
+//' @export
+// [[Rcpp::export]]
 double getLikelihood(NumericVector obs,
 		     NumericVector params,
 		     NumericVector model,
 		     Nullable<NumericVector> initialstate = R_NilValue,
-		     Nullable<double> starttime = 0,
-		     Nullable<double> endtime = INFINITY)
+		     Nullable<NumericVector> starttime = R_NilValue,
+		     Nullable<NumericVector> endtime = R_NilValue)
 {
   int _model;
   double _tau1, _tau2;
   int endpos[_MAXN], startpos[_MAXN];
   int i;
   int len;
-  double ntrans[100];
+  double *ntrans;
+  double lik;
   
   _model = model[0];
-  _tau1 = starttime;
-  _tau2 = endtime;
   len = obs.length();
+  if(starttime.isUsable() && endtime.isUsable())
+    {
+      NumericVector _starttime(starttime);
+      NumericVector _endtime(endtime);
+      _tau1 = _starttime[0];
+      _tau2 = _endtime[0];
+    }
+  else
+    {
+      _tau1 = 0;
+      _tau2 = INFINITY;
+    }
+
+  ntrans = (double*)malloc(sizeof(double)*nparams(_model, len));
+  for(i = 0; i < nparams(_model, len); i++)
+    {
+      ntrans[i] = params[i];
+    }
   
   for(i = 0; i < len; i++)
-    endpost[i] = obs[i]
+    endpos[i] = obs[i];
     
-    if(initialstate.isUsable()) {
+  if(initialstate.isUsable()) {
     NumericVector _initialstate(initialstate);
     for(i = 0; i < len; i++) {
       startpos[i] = _initialstate[i];
     }
+  } else {
+    for(i = 0; i < len; i++) {
+      startpos[i] = 0;
     }
+  }
 
-  LikelihoodMultiple(endpost, ntrans, len, startpos, _tau1, _tau2, _model);
-  //LikelihoodMultiple(&(matrix[2*i*len+len]), ntrans, len, startpos, tau1s[i], tau2s[i], _model);
+  lik = LikelihoodMultiple(endpos, ntrans, len, startpos, _tau1, _tau2, _model);
+  free(ntrans);
+  
+  return lik;
 }
-*/
+
 
 //' Runs HyperTraPS-related inference on a dataset of observations
 //'
