@@ -1349,10 +1349,11 @@ state.probs = function(my.post,
     if(is.na(sum(prob.set))) {
       prob.set = rep(1/(my.post$L+1), my.post$L+1)
     }
-    if(length(prob.set) != my.post$L+1 | abs(sum(prob.set)-1) < 1e-4) {
-      message("Problem with specified probability profile for feature counts")
+    if(length(prob.set) != my.post$L+1) {
+      message("Probability profile should have exactly L+1 entries: P(0 features), P(1 feature), ..., P(L features)")
       return(NULL)
-    }
+    } 
+    prob.set = abs(prob.set)/sum(abs(prob.set))
     state = unlist(lapply(my.post$dynamics$states$State, DecToBin, len=my.post$L))
     n.features = unlist(lapply(state, stringr::str_count, pattern="1"))
     df = data.frame(state=state,
