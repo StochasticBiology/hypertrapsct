@@ -7,6 +7,7 @@
 NULL
 #> NULL
 
+# simply returns a binary (character string) of length len from a decimal 
 DecToBin <- function(x, len) {
   s = c()
   for(j in (len-1):0)
@@ -16,6 +17,7 @@ DecToBin <- function(x, len) {
   return(paste(s, collapse=""))
 }
 
+# simply converts a binary to a decimal
 BinToDec <- function(state) {
   this.ref = 0
   for(j in 1:length(state)) {
@@ -26,10 +28,15 @@ BinToDec <- function(state) {
 
 #' Likelihood trace
 #' 
-#' Creates a plot
+#' Creates a plot of likelihood throughout an inference run, for diagnostics. The working likelihoods
+#' is the red line; two independent refits are given by black dashed lines. We want the three lines
+#' to overlap (converged likelihood estimate), have constant mean (MCMC run converged), and have no
+#' periods of stasis (MCMC run not frozen).
 #' 
-#' @param my.post A fitted hypercube returned from HyperTraPS
-#' @return a ggplot
+#' If these conditions are not met, consider respectively more walkers, longer runs, smaller kernel.
+#' 
+#' @param my.post a model fit returned from HyperTraPS
+#' @return a ggplot object containing the diagnostic trace 
 #' @export
 #' @examples
 #' observations <- matrix(c(0,0,0,
@@ -50,12 +57,18 @@ plotHypercube.lik.trace = function(my.post) {
   return(this.plot + ggplot2::theme_light() )
 }
 
-#' Acquisition ordering
+#' Bubble plot for acquisition ordering
 #' 
-#' Creates a plot
+#' Creates a plot summarising the ordering of feature acquisitions in a fitted HyperTraPS
+#' model. The circle at ordering i for feature j gives the probability that feature j is
+#' acquired at order i in an evolutionary process starting with no features and proceeding
+#' to all features. For example, P = 0.2 at i = 3, j = 2 means there is a 0.2 probability that
+#' feature 2 is the third to be acquired.
 #' 
-#' @param my.post A fitted hypercube returned from HyperTraPS
-#' @return a ggplot
+#' @param my.post a model fit returned from HyperTraPS
+#' @param reorder logical, whether to reorder features by their mean ordering; default FALSE
+#' @param transpose logical, whether to transpose the axes of the plot; default FALSE
+#' @return a ggplot object
 #' @export
 #' @examples
 #' observations <- matrix(c(0,0,0,
@@ -86,15 +99,20 @@ plotHypercube.bubbles = function(my.post, reorder=FALSE, transpose=FALSE) {
   }
 }
 
-#' Binned acquisition ordering
+#' Bubble plot for acquisition ordering, binned version
 #' 
-#' Creates a plot
+#' Creates a plot summarising the ordering of feature acquisitions in a fitted HyperTraPS
+#' model. The circle at ordering i for feature j gives the probability that feature j is
+#' acquired in ordering bin i in an evolutionary process starting with no features and proceeding
+#' to all features. Ordering bins contain sets of specific orderings.
 #' 
-#' @param my.post A fitted hypercube returned from HyperTraPS
-#' @param reorder Logical. Defaults to FALSE.
-#' @param transpose Logical. Defaults to FALSE.
-#' @param bins Numeric. Defaults to 5.
-#' @return a ggplot
+#' Can be useful to summarise dynamics when there are lots of features.
+#' 
+#' @param my.post a model fit returned from HyperTraPS
+#' @param reorder logical, whether to reorder features by their mean ordering; default FALSE
+#' @param transpose logical, whether to transpose the axes of the plot; default FALSE
+#' @param bins numeric, number of ordering bins to use. Defaults to 5.
+#' @return a ggplot object
 #' @export
 #' @examples
 #' observations <- matrix(c(0,0,0,
@@ -134,11 +152,18 @@ plotHypercube.bubbles.coarse = function(my.post, reorder=FALSE, transpose=FALSE,
   }
 }
 
-#' Comparison bubble plot
+#' Bubble plot for acquisition ordering, comparison version
 #' 
-#' Instead of a "bubble" plot, make bubbles out of a collection of segments, one for each different inference run, so the (dis)agreement between runs can be visualised
+#' Creates a plot summarising the ordering of feature acquisitions in a list of fitted HyperTraPS
+#' models. Segment k at ordering i for feature j gives the probability that feature j is
+#' acquired at order i in an evolutionary process starting with no features and proceeding
+#' to all features, from model fit k. For example, P = 0.2 at i = 3, j = 2 means there is a 0.2 
+#' probability that feature 2 is the third to be acquired.
 #' 
-#' @param my.post.list A list of fitted hypercubes returned from HyperTraPS
+#' Effectively, the plot makes "bubbles" out of a collection of segments, one for each different 
+#' inference run, so the (dis)agreement between runs can be visualised.
+#' 
+#' @param my.post.list A list of fitted models returned from HyperTraPS
 #' @param reorder Whether to order features by mean acquisition; default FALSE
 #' @param transpose Whether to transpose the plot; default FALSE
 #' @param thetastep The number of discrete steps in a polygon approximating a circle segment; default 10 (higher gives smoother visuals but takes longer)
@@ -233,15 +258,15 @@ plotHypercube.bubbles.compare = function(my.post.list,
 
 
 
-#' Plot transition graph
+#' Visualise a fitted transition graph (old version)
 #' 
 #' Creates a plot
 #' 
-#' @param my.post A fitted hypercube returned from HyperTraPS
+#' @param my.post A model fit returned from HyperTraPS
 #' @param thresh A numeric from 0 to 1. Lower flux threshold to display. Defaults to 0.05.
-#' @param node.labels Logical. Defaults to TUE
-#' @param node.label.size A numeric. Defaults to 2
-#' @param node.label.box A logical. Defaults to FALSE.
+#' @param node.labels Logical. Whether to label nodes in the graph. Defaults to TRUE
+#' @param node.label.size A numeric. Size of text for node labels. Defaults to 2
+#' @param node.labels.box A logical. Whether to box node labels. Defaults to FALSE.
 #' @return a ggplot
 #' @export
 #' @examples
@@ -278,15 +303,15 @@ plotHypercube.graph = function(my.post, thresh = 0.05,
   return(this.plot)
 }
 
-#' Transition graph plot
+#' Visualise transition graph from sampling (old version)
 #' 
 #' Creates a plot
 #' 
-#' @param my.post A fitted hypercube returned from HyperTraPS
-#' @param max.samps A numeric. Number of trajectories to plot. Defaults to 1000.
+#' @param my.post A model fit returned from HyperTraPS
+#' @param max.samps A numeric. Number of trajectories to simulate to construct network estimate. Defaults to 1000.
 #' @param thresh A numeric from 0 to 1. Lower flux threshold to display. Defaults to 0.05.
 #' @param node.labels Logical. Whether to display node labels. Defaults to TRUE.
-#' @param node.label.size A numeric. Defaults to 2
+#' @param node.label.size A numeric. Text size for node labels. Defaults to 2
 #' @return a ggplot
 #' @export
 #' @examples
@@ -329,28 +354,28 @@ plotHypercube.sampledgraph = function(my.post, max.samps = 1000, thresh = 0.05, 
   return(this.plot)
 }
 
-#' Transition graph plot
+#' Visualise a transition graph from sampling
 #' 
-#' Creates a plot
+#' Creates a visualisation of the transition graph from a HyperTraPS model fit.
 #' 
-#' @param my.post A fitted hypercube returned from HyperTraPS
-#' @param max.samps A numeric. Number of trajectories to plot. Defaults to 1000.
+#' @param my.post A model fit returned from HyperTraPS
+#' @param max.samps A numeric. Number of trajectories to simulate to construct network estimate. Defaults to 1000.
 #' @param thresh A numeric from 0 to 1. Lower flux threshold to display. Defaults to 0.05.
 #' @param node.labels Logical. Whether to display node labels. Defaults to TRUE.
 #' @param use.arc Logical. Whether to use curved edges. Defaults to FALSE.
 #' @param no.times Logical. Whether to display timing on edges. Defaults to FALSE.
 #' @param small.times Logical. Whether to make the timing information tiny.
-#' @param times.offset A numeric vector with relative x and y coordinates. 
+#' @param times.offset A numeric vector with relative x and y coordinates for offsetting time values. 
 #'      Defaults to c(0.1, -0.1).
-#' @param edge.label.size A numeric. Defaults to 2.
-#' @param edge.label.angle A string. Unused
-#' @param edge.label.colour A hex color code. Defaults to "#000000".
+#' @param edge.label.size A numeric. Size of labels for edges (which feature is gained) Defaults to 2.
+#' @param edge.label.angle A string. Arrangement of edge labels on the edge (see [ggraph::geom_edge_link()]). Passed to [ggraph::geom_edge_link()]. Defaults to "across".
+#' @param edge.label.colour A hex color code for edge labels. Defaults to "#000000".
 #' @param edge.check.overlap A logical. Passed to [ggraph::geom_edge_link()]. 
 #'      If TRUE, text that overlaps previous text in the same layer will not be plotted. 
 #'      Defaults to TRUE.
-#' @param featurenames A character vector
-#' @param truncate An optional integer. Limits the number of features plotted.
-#' @param node.label.size A numeric. Defaults to 2
+#' @param featurenames Either logical (TRUE = use names from model fit), or a character vector of feature names. Default TRUE.
+#' @param truncate An optional integer. Limits the number of steps from the ancestral node that are simulated and plotted.
+#' @param node.label.size A numeric. Size of node labels. Defaults to 2
 #' @param use.timediffs Logical. Defaults to TRUE.
 #' @return a ggplot
 #' @export
@@ -420,8 +445,6 @@ plotHypercube.sampledgraph2 = function(my.post, max.samps = 1000, thresh = 0.05,
   dfu$Flux = dfu$Flux / nsamps
   dfu = dfu[dfu$Flux > thresh,]
   trans.g = igraph::graph_from_data_frame(dfu)
-  #bs = unlist(lapply(as.numeric(V(trans.g)$name), DecToBin, len=bigL))
-  #bs = unlist(lapply(as.numeric(as.vector(V(trans.g))), DecToBin, len=bigL))
   bs = igraph::V(trans.g)$name
   igraph::V(trans.g)$binname = bs
   layers = stringr::str_count(bs, "1")
@@ -462,12 +485,11 @@ plotHypercube.sampledgraph2 = function(my.post, max.samps = 1000, thresh = 0.05,
 
 #' Timing histograms
 #' 
-#' Creates a plot
+#' Creates a plot of histograms for timing of each feature's acquisition.
 #' 
-#' @param my.post A fitted hypercube returned from HyperTraPS
+#' @param my.post A model fit returned from HyperTraPS
 #' @param t.thresh Upper threshold of time to display. Defaults to 20.
-#' @param featurenames A logical. Whether or not to use featurenames. Defaults to TRUE
-#' @param featurenames A character vector.
+#' @param featurenames Either logical (TRUE = use names from model fit), or a character vector of feature names. Default TRUE.
 #' @param log.time Whether or not to log-transform time. Defaults to TRUE.
 #' @return a ggplot
 #' @export
@@ -523,9 +545,9 @@ plotHypercube.timehists = function(my.post, t.thresh = 20, featurenames = TRUE, 
 
 #' Regularisation info and AIC
 #' 
-#' Creates a plot
+#' Creates a plot describing the process of regularisation by parameter pruning.
 #' 
-#' @param my.post A fitted hypercube returned from HyperTraPS
+#' @param my.post A model fit returned from HyperTraPS, including the regularisation process
 #' @return a ggplot
 #' @export
 #' @examples
@@ -541,13 +563,13 @@ plotHypercube.regularisation = function(my.post) {
            ggplot2::labs(x = "Number of non-zero parameters", y="AIC") + ggplot2::theme_light() )
 }
 
-#' Motifs
+#' Motif plot
 #' 
 #' Summarize the inferred acquisition order. Analogous to [plotHypercube.bubbles()]
 #' 
-#' @param my.post A fitted hypercube returned from HyperTraPS
-#' @param featurenames Optional character vector
-#' @param label.size Numeric. Defaults to 3.
+#' @param my.post A model fit returned from HyperTraPS
+#' @param featurenames Either logical (TRUE = use names from model fit), or a character vector of feature names. Default TRUE.
+#' @param label.size Numeric. Size of labels for each feature. Defaults to 3.
 #' @param label.scheme String. Defaults to "full". Will remove the labels if any
 #'  other value is passed.
 #' @return a ggplot
@@ -598,9 +620,9 @@ plotHypercube.motifs = function(my.post,
 #' 
 #' Visualize the acquisition of features in continuous time.
 #'
-#' @param my.post A fitted hypercube returned from HyperTraPS.
+#' @param my.post A model fit returned from HyperTraPS.
 #' @param log.time Whether or not to log-transform timings. Defaults to TRUE
-#' @param featurenames A logical. Whether or not to use feature names. Defaults to TRUE
+#' @param featurenames Either logical (TRUE = use names from model fit), or a character vector of feature names. Default TRUE.
 #' @return a ggplot
 #' @export
 #' @examples
@@ -645,7 +667,7 @@ plotHypercube.timeseries = function(my.post, log.time = TRUE, featurenames=TRUE)
 #' 
 #' Creates a combined likelihood trace, bubble plot and sampledgraph.
 #' 
-#' @param my.post A fitted hypercube returned from [HyperTraPS()]
+#' @param my.post A model fit returned from [HyperTraPS()]
 #' @param f.thresh Lower threshold passed to [plotHypercube.sampledgraph2()]
 #' @param t.thresh A upper threshold for time passed to [plotHypercube.timehists()]
 #' @param continuous.time Whether or not to include [plotHypercube.timehists()]
@@ -681,17 +703,17 @@ plotHypercube.summary = function(my.post, f.thresh = 0.05, t.thresh = 20, contin
   }
 }
 
-#' Visualize pairwise influences
+#' Visualize pairwise influences (matrix)
 #' 
-#' Plot pairwise influences between features in the L^2 picture.
+#' Plot pairwise influences between features in the L^2 picture, as a matrix.
 #' 
-#' @param my.post A fitted hypercube returned from HyperTraPS
-#' @param featurenames A character vector.
-#' @param use.regularised Logical. Defaults to FALSE.
-#' @param use.final Logical. Defaults to FALSE.
-#' @param reorder Logical. Defaults to FALSE.
-#' @param upper.right Logical. Defaults to FALSE.
-#' @param cv.thresh Numeric. Upper threshold. Defaults to Inf.
+#' @param my.post A model fit returned from HyperTraPS
+#' @param featurenames Either logical (TRUE = use names from model fit), or a character vector of feature names. Default TRUE.
+#' @param use.regularised Logical, whether to use the regularised (by parameter pruning) parameterisation. Defaults to FALSE.
+#' @param use.final Logical, whether to use only the final parameterisation. Makes sense for point estimates (e.g. from simulated annealing), not for Bayesian posteriors. Defaults to FALSE.
+#' @param reorder Logical, whether to reorder features by mean acquisition. Defaults to FALSE.
+#' @param upper.right Logical, whether to arrange features in an upper-right direction. Defaults to FALSE.
+#' @param cv.thresh Numeric. Upper threshold of CV for interactions to be plotted. Defaults to Inf.
 #' @param red.green Logical. Adjust colors for red-green color-blindness. 
 #'      Defaults to FALSE.
 #' @return a ggplot
@@ -975,8 +997,8 @@ qgramdist = function(my.post.1, my.post.2) {
 #' predict the next evolutionary step from a given state
 #' only works so far if the posterior structure has transition dynamics information
 #' 
-#' @param my.post A fitted hypercube returned from HyperTraPS
-#' @param state A numeric vector of 1s and 0s. 
+#' @param my.post A model fit returned from HyperTraPS
+#' @param state A numeric vector of 1s and 0s, giving the state from which a prediction should be made. 
 #' @return A data frame of states and probabilities for the next step
 #' @export
 #' @examples
@@ -999,7 +1021,7 @@ predictNextStep = function(my.post, state) {
 
 #' Levels of a dataset
 #' 
-#' get the representation of different hypercube levels in a dataset
+#' get the representation of different hypercube levels (acquired feature counts) in a dataset
 #' 
 #' @param data.mat A numeric matrix
 #' @return A data frame containing counts for each level of the hypercube
@@ -1025,6 +1047,7 @@ dataLevels = function(data.mat) {
 #' @param my.post A fitted hypercube returned from HyperTraPS
 #' @param state An integer vector detailing the state to impute. Hidden values 
 #'      are denoted with 2.
+#' @param level.weight Relative probabilities of different numbers of feature acquisitions, from 0 to L. Predictions will be conditional on this weighting. Default 1.
 #' @return A list containing two data frames: state.probs and locus.probs.
 #' @export
 #' @examples
@@ -1105,10 +1128,9 @@ predictHiddenVals = function(my.post, state, level.weight=1) {
 
 #' Visualize probabilities at a given set of times
 #' 
-#' Creates a plot
-#' plot genotype probabilities at a given set of times as a "motif" plot
+#' Creates a plot of genotype probabilities at a given set of times, as a "motif" plot
 #' 
-#' @param my.post A fitted hypercube returned from HyperTraPS.
+#' @param my.post A model fit returned from HyperTraPS.
 #' @param t.set A numeric vector of times to visualize.
 #' @param thresh A numeric of the lower bound threshold for probabilities 
 #'      to display. Defaults to 0.05.
@@ -1154,18 +1176,18 @@ plotHypercube.motifseries = function(my.post, t.set=0, thresh = 0.05, label.size
   )
 }
 
-#' Visualize pairwise influences
+#' Visualize pairwise influences (graph)
 #' 
-#' plot pairwise influences between features in the L^2 or L^3 picture
+#' plot pairwise influences between features in the L^2 or L^3 picture, as a graph
 #' 
-#' @param my.post A fitted hypercube returned from HyperTraPS.
-#' @param featurenames A character vector of length L. Optional 
-#' @param use.regularised A logical. Defaults to FALSE
-#' @param use.final A logical. Defaults to FALSE.
-#' @param thresh A numeric describing the threshold. Defaults to 0.05
-#' @param cv.thresh A numeric describing the upper bound. Defaults to Inf
+#' @param my.post A model fit returned from HyperTraPS.
+#' @param featurenames Either logical (TRUE = use names from model fit), or a character vector of feature names. Default TRUE.
+#' @param use.regularised Logical, whether to use the regularised (by parameter pruning) parameterisation. Defaults to FALSE.
+#' @param use.final Logical, whether to use only the final parameterisation. Makes sense for point estimates (e.g. from simulated annealing), not for Bayesian posteriors. Defaults to FALSE.
+#' @param thresh A numeric describing the threshold strength of an interaction to be plotted. Defaults to 0.05
+#' @param cv.thresh Numeric. Upper threshold of CV for interactions to be plotted. Defaults to Inf.
 #' @param label.size A numeric describing label size in mm. Defaults to 2
-#' @param red.green A logical.
+#' @param red.green A logical controlling red-green colour palette. Default FALSE.
 #' @return a ggplot
 #' @export
 #' @examples
@@ -1268,8 +1290,8 @@ plotHypercube.influencegraph = function(my.post,
 #' `plotHypercube.prediction` visualizes output from `predictHiddenVals`
 #' 
 #' @param prediction Created with `predictHiddenVals`
-#' @param max.size Defaults to 30. Size of largest points
-#' @return a ggplot
+#' @param max.size Defaults to 30. Size of largest points in the word cloud
+#' @return a ggplot including a word cloud
 #' @export
 #' @examples
 #' observations <- matrix(c(0,0,0,
@@ -1317,9 +1339,9 @@ prob.by.time = function(my.post, tau) {
 #' 
 #' Using a fitted model, return a dataframe with observation probabilities of each state, conditional on a given number of features having been acquired
 #' 
-#' @param my.post something
-#' @param prob.set something
-#' @return something
+#' @param my.post a model fit returned from HyperTraPS
+#' @param prob.set A numeric vector of length L+1 and with total 1, describing the probability that 0, 1, ..., L features have been acquired. Defaults to NA, which imposes uniform probabilities from 0 to L.
+#' @return a dataframe containing states and two conditional observation probabilities. The first is the probability of seeing state i given that exactly i's number of features have been acquired. The second is the probability of state i given the specified profile of feature acquisitions.
 #' @export
 state.probs = function(my.post,
                               prob.set = NA) {
@@ -1327,7 +1349,7 @@ state.probs = function(my.post,
     if(is.na(sum(prob.set))) {
       prob.set = rep(1/(my.post$L+1), my.post$L+1)
     }
-    if(length(prob.set) != my.post$L+1 | abs(sum(prob.set)-1) > 1e-4) {
+    if(length(prob.set) != my.post$L+1 | abs(sum(prob.set)-1) < 1e-4) {
       message("Problem with specified probability profile for feature counts")
       return(NULL)
     }
@@ -1346,17 +1368,24 @@ state.probs = function(my.post,
 
 #' Reconstruct ancestral states and create an annotated tree
 #' 
-#' `curate.tree` reads a phylogeny from file in newick tree format and a 
-#' csv-file containing tip-labels and features. 
+#' Convert phylogenetically-embedded data into transitions that can be input to
+#' HyperTraPS.
 #' 
-#' @param tree.filename a file containing a phylogeny in newick-tree format
-#' @param data.filename a file with tip-labels in the first column and features
-#'  in the remaining ones.
+#' `curate.tree` takes a phylogeny (either from phytools or from a filename) and 
+#' a dataframe of feature profiles on the tree tips (either as a dataframe or as
+#' a filename), reconstructs ancestral states given an assumption of rare, irreversible
+#' dynamics, and returns the inferred set of transitions between states.
+#' 
+#' @param tree.src either a tree, or a filename containing a phylogeny in newick-tree format
+#' @param data.src either a dataframe or a filename containing a CSV dataframe. 
+#' The first column should contain IDs corresponding to the tip.labels of the tree. 
+#' The subsequent columns should contain the 0s and 1s describing that individual's presence/absence profile.
 #' @param losses defaults to FALSE. Determines whether irreversible gains or 
 #'  losses of features are considered.
 #' @param data.header defaults to TRUE. Determines Whether data.filename is
 #'  read with a header or not.
-#' @param enforce.root defaults to TRUE. If the ancestral state reconstructions assigns a root state that is not 0^L (for gains) or 1^L (for losses), explicitly set this to be the root state
+#' @param enforce.root defaults to TRUE. If the ancestral state reconstructions assigns a root state that is 
+#' not 0^L (for gains) or 1^L (for losses), explicitly set this to be the root state
 #' @return a list containing tree, data, transitions, srcs, dests and times
 #' @export
 curate.tree = function(tree.src, data.src, 
@@ -1501,10 +1530,10 @@ curate.tree = function(tree.src, data.src,
 
 #' Visualize phylogenetic tree with features
 #' 
-#' Creates a plot
+#' Creates a plot of a "curated" tree and binary dataset.
 #' 
 #' @param tree.set combined phylogeny and feature data created with [curate.tree()]
-#' @param scale_fn a scaling function from ggtree:geom_treescale (default provided)
+#' @param scale.fn a scaling function from ggtree:geom_treescale (default provided)
 #' @param names whether to include tip names (default FALSE)
 #' @param font.size font size for feature names (default 4)
 #' @param hjust horizontal text justification for feature names (default 0)
