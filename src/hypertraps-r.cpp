@@ -1453,15 +1453,15 @@ List RegulariseR(int *matrix, int len, int ntarg, double *ntrans, double *tau1s,
   
 }
 
-//' Get likelihood for an observation, given a fitted model
+//' Get likelihood for an observation, given a model parameterisation
 //'
-//' @param obs XXX
-//' @param params XXX
-//' @param model XXX
-//' @param initialstate XXX
-//' @param starttime XXX
-//' @param endtime XXX
-//' @return the likelihood
+//' @param obs a numeric vector giving the observation
+//' @param params a numeric vector giving the parameterisation
+//' @param model the model to use (-1, 1, 2, 3, 4)
+//' @param initialstate optional: initial state for a transition to the "obs" state (default 0^L)
+//' @param starttime optional: starting time for the time window for this transition
+//' @param endtime optional: end time for the time window for this transition
+//' @return the likelihood associated with this observation
 //' @export
 // [[Rcpp::export]]
 double getLikelihood(NumericVector obs,
