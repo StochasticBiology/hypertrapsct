@@ -7,11 +7,11 @@
 plotHypercube.timeseries(my.post, log.time = TRUE, featurenames = TRUE)
 }
 \arguments{
-\item{my.post}{A fitted hypercube returned from HyperTraPS.}
+\item{my.post}{A model fit returned from HyperTraPS.}
 
 \item{log.time}{Whether or not to log-transform timings. Defaults to TRUE}
 
-\item{featurenames}{A logical. Whether or not to use feature names. Defaults to TRUE}
+\item{featurenames}{Either logical (TRUE = use names from model fit), or a character vector of feature names. Default TRUE.}
 }
 \value{
 a ggplot

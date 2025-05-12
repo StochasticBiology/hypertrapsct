@@ -2,7 +2,7 @@
 % Please edit documentation in R/hypertraps.R
 \name{plotHypercube.sampledgraph2}
 \alias{plotHypercube.sampledgraph2}
-\title{Transition graph plot}
+\title{Visualise a transition graph from sampling}
 \usage{
 plotHypercube.sampledgraph2(
   my.post,
@@ -24,9 +24,9 @@ plotHypercube.sampledgraph2(
 )
 }
 \arguments{
-\item{my.post}{A fitted hypercube returned from HyperTraPS}
+\item{my.post}{A model fit returned from HyperTraPS}
 
-\item{max.samps}{A numeric. Number of trajectories to plot. Defaults to 1000.}
+\item{max.samps}{A numeric. Number of trajectories to simulate to construct network estimate. Defaults to 1000.}
 
 \item{thresh}{A numeric from 0 to 1. Lower flux threshold to display. Defaults to 0.05.}
 
@@ -38,24 +38,24 @@ plotHypercube.sampledgraph2(
 
 \item{small.times}{Logical. Whether to make the timing information tiny.}
 
-\item{times.offset}{A numeric vector with relative x and y coordinates. 
+\item{times.offset}{A numeric vector with relative x and y coordinates for offsetting time values. 
 Defaults to c(0.1, -0.1).}
 
-\item{edge.label.size}{A numeric. Defaults to 2.}
+\item{edge.label.size}{A numeric. Size of labels for edges (which feature is gained) Defaults to 2.}
 
-\item{edge.label.angle}{A string. Unused}
+\item{edge.label.angle}{A string. Arrangement of edge labels on the edge (see [ggraph::geom_edge_link()]). Passed to [ggraph::geom_edge_link()]. Defaults to "across".}
 
-\item{edge.label.colour}{A hex color code. Defaults to "#000000".}
+\item{edge.label.colour}{A hex color code for edge labels. Defaults to "#000000".}
 
 \item{edge.check.overlap}{A logical. Passed to [ggraph::geom_edge_link()]. 
 If TRUE, text that overlaps previous text in the same layer will not be plotted. 
 Defaults to TRUE.}
 
-\item{featurenames}{A character vector}
+\item{featurenames}{Either logical (TRUE = use names from model fit), or a character vector of feature names. Default TRUE.}
 
-\item{truncate}{An optional integer. Limits the number of features plotted.}
+\item{truncate}{An optional integer. Limits the number of steps from the ancestral node that are simulated and plotted.}
 
-\item{node.label.size}{A numeric. Defaults to 2}
+\item{node.label.size}{A numeric. Size of node labels. Defaults to 2}
 
 \item{use.timediffs}{Logical. Defaults to TRUE.}
 }
@@ -63,7 +63,7 @@ Defaults to TRUE.}
 a ggplot
 }
 \description{
-Creates a plot
+Creates a visualisation of the transition graph from a HyperTraPS model fit.
 }
 \examples{
 observations <- matrix(c(0,0,0,

@@ -15,17 +15,17 @@ plotHypercube.curated.tree(
 \arguments{
 \item{tree.set}{combined phylogeny and feature data created with [curate.tree()]}
 
+\item{scale.fn}{a scaling function from ggtree:geom_treescale (default provided)}
+
 \item{names}{whether to include tip names (default FALSE)}
 
 \item{font.size}{font size for feature names (default 4)}
 
 \item{hjust}{horizontal text justification for feature names (default 0)}
-
-\item{scale_fn}{a scaling function from ggtree:geom_treescale (default provided)}
 }
 \value{
 a ggplot
 }
 \description{
-Creates a plot
+Creates a plot of a "curated" tree and binary dataset.
 }

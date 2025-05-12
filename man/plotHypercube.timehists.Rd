@@ -12,11 +12,11 @@ plotHypercube.timehists(
 )
 }
 \arguments{
-\item{my.post}{A fitted hypercube returned from HyperTraPS}
+\item{my.post}{A model fit returned from HyperTraPS}
 
 \item{t.thresh}{Upper threshold of time to display. Defaults to 20.}
 
-\item{featurenames}{A character vector.}
+\item{featurenames}{Either logical (TRUE = use names from model fit), or a character vector of feature names. Default TRUE.}
 
 \item{log.time}{Whether or not to log-transform time. Defaults to TRUE.}
 }
@@ -24,7 +24,7 @@ plotHypercube.timehists(
 a ggplot
 }
 \description{
-Creates a plot
+Creates a plot of histograms for timing of each feature's acquisition.
 }
 \examples{
 observations <- matrix(c(0,0,0,

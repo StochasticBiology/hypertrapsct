@@ -2,7 +2,7 @@
 % Please edit documentation in R/hypertraps.R
 \name{plotHypercube.bubbles.compare}
 \alias{plotHypercube.bubbles.compare}
-\title{Comparison bubble plot}
+\title{Bubble plot for acquisition ordering, comparison version}
 \usage{
 plotHypercube.bubbles.compare(
   my.post.list,
@@ -15,7 +15,7 @@ plotHypercube.bubbles.compare(
 )
 }
 \arguments{
-\item{my.post.list}{A list of fitted hypercubes returned from HyperTraPS}
+\item{my.post.list}{A list of fitted models returned from HyperTraPS}
 
 \item{reorder}{Whether to order features by mean acquisition; default FALSE}
 
@@ -33,7 +33,15 @@ plotHypercube.bubbles.compare(
 a ggplot
 }
 \description{
-Instead of a "bubble" plot, make bubbles out of a collection of segments, one for each different inference run, so the (dis)agreement between runs can be visualised
+Creates a plot summarising the ordering of feature acquisitions in a list of fitted HyperTraPS
+models. Segment k at ordering i for feature j gives the probability that feature j is
+acquired at order i in an evolutionary process starting with no features and proceeding
+to all features, from model fit k. For example, P = 0.2 at i = 3, j = 2 means there is a 0.2 
+probability that feature 2 is the third to be acquired.
+}
+\details{
+Effectively, the plot makes "bubbles" out of a collection of segments, one for each different 
+inference run, so the (dis)agreement between runs can be visualised.
 }
 \examples{
 observations <- matrix(c(0,0,0,

@@ -9,10 +9,10 @@ plotHypercube.prediction(prediction, max.size = 30)
 \arguments{
 \item{prediction}{Created with `predictHiddenVals`}
 
-\item{max.size}{Defaults to 30. Size of largest points}
+\item{max.size}{Defaults to 30. Size of largest points in the word cloud}
 }
 \value{
-a ggplot
+a ggplot including a word cloud
 }
 \description{
 `plotHypercube.prediction` visualizes output from `predictHiddenVals`

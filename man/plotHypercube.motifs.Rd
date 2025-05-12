@@ -2,7 +2,7 @@
 % Please edit documentation in R/hypertraps.R
 \name{plotHypercube.motifs}
 \alias{plotHypercube.motifs}
-\title{Motifs}
+\title{Motif plot}
 \usage{
 plotHypercube.motifs(
   my.post,
@@ -12,11 +12,11 @@ plotHypercube.motifs(
 )
 }
 \arguments{
-\item{my.post}{A fitted hypercube returned from HyperTraPS}
+\item{my.post}{A model fit returned from HyperTraPS}
 
-\item{featurenames}{Optional character vector}
+\item{featurenames}{Either logical (TRUE = use names from model fit), or a character vector of feature names. Default TRUE.}
 
-\item{label.size}{Numeric. Defaults to 3.}
+\item{label.size}{Numeric. Size of labels for each feature. Defaults to 3.}
 
 \item{label.scheme}{String. Defaults to "full". Will remove the labels if any
 other value is passed.}

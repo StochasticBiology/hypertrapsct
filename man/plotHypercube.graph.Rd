@@ -2,7 +2,7 @@
 % Please edit documentation in R/hypertraps.R
 \name{plotHypercube.graph}
 \alias{plotHypercube.graph}
-\title{Plot transition graph}
+\title{Visualise a fitted transition graph (old version)}
 \usage{
 plotHypercube.graph(
   my.post,
@@ -13,15 +13,15 @@ plotHypercube.graph(
 )
 }
 \arguments{
-\item{my.post}{A fitted hypercube returned from HyperTraPS}
+\item{my.post}{A model fit returned from HyperTraPS}
 
 \item{thresh}{A numeric from 0 to 1. Lower flux threshold to display. Defaults to 0.05.}
 
-\item{node.labels}{Logical. Defaults to TUE}
+\item{node.labels}{Logical. Whether to label nodes in the graph. Defaults to TRUE}
 
-\item{node.label.size}{A numeric. Defaults to 2}
+\item{node.label.size}{A numeric. Size of text for node labels. Defaults to 2}
 
-\item{node.label.box}{A logical. Defaults to FALSE.}
+\item{node.labels.box}{A logical. Whether to box node labels. Defaults to FALSE.}
 }
 \value{
 a ggplot
