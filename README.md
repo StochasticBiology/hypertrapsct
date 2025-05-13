@@ -2,10 +2,12 @@
 
 Hypercubic transition path sampling: Flexible inference of accumulation pathways, in discrete or continuous time, under different model structures, using combinations of longitudinal, cross-sectional, and phylogenetically-linked observations (Aga et al., 2024).
 
-Bioconductor branch: install with
+R package branch: install with
 `remotes::install_github("StochasticBiology/hypertraps-ct@bioconductor")`
 then load with
 `library(hypertrapsct)`
+
+If you're looking for the codebase originally associated with the Aga et al. paper, it's here https://github.com/StochasticBiology/hypertraps-ct
 
 ![image](https://github.com/StochasticBiology/hypertraps-ct/assets/50171196/2c0fac84-76bf-41a6-9688-a4e429efed20)
 An example inferred hypercubic transition graph (right) showing probable transitions during the evolution of multidrug resistance in tuberculosis, using phylogenetically-embedded original data (left) (Casali et al. 2014).
