@@ -87,7 +87,7 @@ HyperTraPS needs at least a set of observations. *This is the only essential inp
 | Use APM (0/1) | apm=*N* |  0 | Auxiliary pseudo-marginal MCMC (see Greenbury et al. 2020). Attempts to account for the random nature of the likelihood sampler by conditioning on random seed, which also varies throughout the MCMC run. Computationally more involved, but may prevent chains getting stuck.|
 | Use SA (0/1) | sa=*N* |  0 | Simulated annealing. Rather than running MCMC, optimises parameter set against a decreasing temperature profile (inverse quarter power of the step). Will give a final point parameter estimate rather than a posterior distribution.|
 | Use SGD (0/1) | sgd=*N* |  0 | Stochastic gradient descent. Rather than running MCMC, estimate likelihood gradient at each step and use this (scaled) to propose the next move. Will give a final point parameter estimate rather than a posterior distribution.|
-| Scaling factor for gradient in SGD | sgd=*N* |  0.01 | If using SGD, how much to scale the local likelihood gradient to determine the next parameter step.|
+| Scaling factor for gradient in SGD | sgd_scale=*N* |  0.01 | If using SGD, how much to scale the local likelihood gradient to determine the next parameter step.|
 | Use PLI (0/1) | pli=*N* |  0 |  Phenotype landscape inference (see Williams et al. 2014). PLI applies no bias to the sampling walkers, reducing efficiency. Included for back-compatibility. |
 | Gap between posterior samples | samplegap=*N* | 1e3 (>1e4 steps), 1e2 (>1e2 steps), or 1 | Number of MCMC steps between parameter samples that are treated as posterior samples. Higher values guard against correlated sampling.|
 | Regularisation by penalised likelihood | penalty=*X* |  0 | Penalty per non-zero parameter |
