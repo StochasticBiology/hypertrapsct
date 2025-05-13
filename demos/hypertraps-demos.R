@@ -235,3 +235,23 @@ plotHypercube.summary(my.post.pli, continuous.time = FALSE)
 # start with every edge parameterised, then regularise
 my.post.bigmodel.regularise = HyperTraPS(m.2, initialstates = m.1, model = -1, regularise = 1, walkers = 20)
 plotHypercube.regularisation(my.post.bigmodel.regularise)
+
+
+#####
+## Example 6: demonstrating issues with estimation and chains
+
+# not enough walkers: bad likelihood estimates
+my.post.0a = HyperTraPS(m.2, samplegap = 5, walkers = 1)
+my.plot.0a = plotHypercube.lik.trace(my.post.0a)
+# big kernel: long periods of stasis
+my.post.0b = HyperTraPS(m.2, samplegap = 5, kernel=7)
+my.plot.0b = plotHypercube.lik.trace(my.post.0b)
+# short chain: not equilibrated
+my.post.0c = HyperTraPS(m.2, samplegap = 1, length = 2)
+my.plot.0c = plotHypercube.lik.trace(my.post.0c)
+# better
+my.post.0 = HyperTraPS(m.2, samplegap = 20, length=4)
+my.plot.0 = plotHypercube.lik.trace(my.post.0)
+
+# plot all together
+ggarrange(my.plot.0a, my.plot.0b, my.plot.0c, my.plot.0, labels=c("A", "B", "C", "D"))
