@@ -18,6 +18,10 @@ Requirements
 
 HyperTraPS-CT is an R package with dependencies: `Rcpp`, `ggplot2`, `ggpubr`, `ggraph`, `ggwordcloud`, `igraph`, `stringr`, `stringdist`, `phangorn`, `phytools`, `ggtree`, `parallel`.
 
+Demonstration
+-----------
+A good place to start is `demos/hypertraps-demos.R`, where the basic form of R commands for HyperTraPS, and most of the more interesting arguments that can be provided, are demonstrated. 
+
 Input
 ------
 
@@ -57,67 +61,39 @@ corresponds to an observation where the first feature is absent, the second feat
 
 HyperTraPS also accepts descriptions of prior distributions on parameters. For the moment these are assumed to be uniform in log parameter space, and are specified by the min and max for each distribution. These should be provided as a matrix `priors` with two columns and N rows. Remember that N, the number of parameters, will depend on the model structure chosen and the number of features in the system. For example, the 3-feature system above and the default model structure (2, referring to L^2 parameters) would have N = 9.
 
-Output
-------
-
-HyperTraPS will output information about the progress of a run to the console, and return a named list containing outputs from and descriptions of the inference process.
-
-*If you are just interested in plotting summary outputs from the inference process, skip to the next section now.*
-
-The output structures are
-
-| Information | R | Notes |
-|-------------|---|-------|
-| Number of features, model type, number of parameters, and likelihood traces over the run | *list*$lik.traces | |
-| Best parameterisation found during run | *list*$best | |
-| (Posterior) samples of parameterisation | *list*$posterior.samples | |
-| Probabilities for individual states | *list*$dynamics$states | Only produced for L < 16 |
-| Probabilities for individual transitions | *list*$dynamics$trans |  Only produced for L < 16 |
-| Best parameterisation after regularisation | *list*$regularisation$best |  Optional |
-| Number of parameters, likelihood, and information criteria during regularisation | *list*$regularisation$reg.process | Optional |
-| "Bubble" probabilities of trait *i* acquisition at ordinal time *j* | *list*$bubbles |  |
-| Histograms of times of trait *i* acquisition | *list*$timehists |  |
-| Individual sampled routes of accumulation | *list*$routes | Matrix with L columns; jth element of a row gives the feature acquired at step j. Each row is a sampled trajectory; there are *samples_per_row* samples per output parameterisation in the (posterior) sample set |
-| Transition times for individual sampled routes of accumulation | *list*$times | Matrix with L columns, with elements corresponding to the timings of each of the steps in the routes matrix above |
-| Dwelling statistics for individual sampled routes of accumulation | *list*$betas |  Matrix with L columns, with elements corresponding to the "beta" (characteristic rate of departure) for each step in the routes matrix above |
-
-The named list can be passed to plotting and prediction functions for analysis -- see "Visualising and using output" below.
-
-Demonstration
------------
-A good place to start is `demos/hypertraps-demos.R`, where the basic form of R commands for HyperTraPS, and most of the more interesting arguments that can be provided, are demonstrated. 
 
 Arguments to HyperTraPS
 ------
 
 HyperTraPS needs at least a set of observations. *This is the only essential input.* This should take the form of a matrix. The table below gives other inputs that can be provided, with more technical points appearing in lower sections.
 
-| Argument | R | Default |
-|----------|---|----------|
-| Input data | obs=*matrix* |  None (required) |
-| Timings and initial states:|||
-| Precursor states | initialstates=*matrix* | None |
-| Time window start | starttimes=*vector* |  0 |
-| Time window end | endtimes=*vector* | starttimes if present (i.e. precisely specified times); otherwise Inf |
-| More technical content: |||
-| Prior mins and maxs | priors=*matrix* |  -10 to 10 in log space for each parameter (i.e. very broad range over orders of magnitude)
-| Model structure | model=*N* |  2 |
-| Number of walkers | walkers=*N* |  200 |
-| Inference chain length | length=*N* |  3 |
-| Perturbation kernel | kernel=*N* | 5 |
-| Random seed | seed=*N* |  1 |
-| Gains (0) or losses (1) | losses=*N* |  0 |
-| Use APM (0/1) | apm=*N* |  0 |
-| Use SA (0/1) | sa=*N* |  0 |
-| Use SGD (0/1) | sgd=*N* |  0 |
-| Use PLI (0/1) | pli=*N* |  0 |
-| Gap between samples | samplegap=*N* | 1e3 (>1e4 steps) or 1e2 (>1e2 steps)
-| Regularisation by penalised likelihood | penalty=*X* |  0 (controls penalty per non-zero parameter) 
-| Regularisation by LASSO | lasso=*X* |  0 (controls lambda, LASSO penalty for absolute parameter values) 
-| Number of simulations per parameter sample | samples_per_row=*N* | 10 (number of samples to use for each parameter set when simulating routes and times for output)
-| Stepwise regularise model after best parameterisation (0/1) | regularise=*N* |  0 |
-| Transition format observations | (not available) | (off) |
-| Output exact transitions (0/1) | output_transitions=*N* |  Switched off for L > 15 to avoid large output; consider switching off for CT 
+| Argument | R | Default | Notes |
+|----------|---|---------|-------|
+| Input data | obs=*matrix* |  None (required) | |
+| Timings and initial states:||||
+| Precursor states | initialstates=*matrix* | None ||
+| Time window start | starttimes=*vector* |  0 ||
+| Time window end | endtimes=*vector* | starttimes if present (i.e. precisely specified times); otherwise Inf ||
+| More technical content: ||||
+| Model structure | model=*N* |  2 | -1: every transition in dependently parameterised. 1: every feature independently acquired. 2: each feature acquisition independently influence other feature rates |(pairwise). 3: pairs of feature acquisitions can non-additively influence other acquisitions. 4: triplets of acquisitions can non-additively influence other acquisitions. |
+| Prior mins and maxs | priors=*matrix* |  -10 to 10 in log space for each parameter (i.e. very broad range over orders of magnitude)|Specified as an n x 2 matrix, where n is number of parameters for the chosen model and columns give upper and lower bounds of a uniform distribution in log space.|
+| Number of walkers | walkers=*N* |  200 | See "Assessing performance" |
+| Inference chain length | length=*N* |  3 | Length will be 10^value (so 3 -> 10^3) |
+| Perturbation kernel | kernel=*N* | 5 | See "Assessing performance". 1: with probability 0.1 per parameter, apply kernel width 0.005. 2-7: apply kernel to each parameter, with width 0.01 (2), 0.05 (3), 0.1 (4), 0.25 (5), 0.5 (6), 0.75 (7) |
+| Random seed | seed=*N* |  1 ||
+| Gains (0) or losses (1) | losses=*N* |  0 ||
+| Use APM (0/1) | apm=*N* |  0 | Auxiliary pseudo-marginal MCMC (see Greenbury et al. 2020). Computationally more involved, but may prevent chains getting stuck.|
+| Use SA (0/1) | sa=*N* |  0 | Simulated annealing. Will give a final point parameter estimate rather than a posterior distribution.|
+| Use SGD (0/1) | sgd=*N* |  0 | Stochastic gradient descent. Will give a final point parameter estimate rather than a posterior distribution.|
+| Scaling factor for gradient in SGD | sgd=*N* |  0.01 | If using SGD, how much to scale the local likelihood gradient to determine the next parameter step.|
+| Use PLI (0/1) | pli=*N* |  0 |  Phenotype landscape inference (see Williams et al. 2014). PLI applies no bias to the sampling walkers, reducing efficiency. Included for back-compatibility. |
+| Gap between posterior samples | samplegap=*N* | 1e3 (>1e4 steps), 1e2 (>1e2 steps), or 1 | Number of MCMC steps between parameter samples that are treated as posterior samples. Higher values guard against correlated sampling.|
+| Regularisation by penalised likelihood | penalty=*X* |  0 | Penalty per non-zero parameter |
+| Regularisation by LASSO | lasso=*X* |  0 | LASSO penalty scaling summed absolute parameter values |
+| Number of simulations per parameter sample | samples_per_row=*N* | 10 | Number of samples to use for each parameter set when simulating routes and times for output |
+| Stepwise regularise model after best parameterisation (0/1) | regularise=*N* |  0 | |
+| Output exact transitions (0/1) | output_transitions=*N* |  Switched off for L > 15 to avoid large output; consider switching off for CT ||
+| Limit console output | limited_output=*N* |  0| |
 
 So some example calls are (see the various demo scripts for more):
 
@@ -131,7 +107,11 @@ So some example calls are (see the various demo scripts for more):
 Visualising and using output
 --------
 
-The various outputs of HyperTraPS can be used in the R plotting functions below, which summarise (amongst other things) the numerical behaviour of the inference processes, the ordering and timings (where appropriate) of feature acquisitions, the structure of the learned hypercubic transition network, and any outputs from regularisation. *To start, `plotHypercube.summary` gives an overview of what we've learned. All of these except `plotHypercube.prediction` take a fitted model -- the output of `HyperTraPS` -- as a required argument, and may take other options as the table describes. `plotHypercube.prediction` takes a required argument that is the output of prediction functions described below.
+The various outputs of HyperTraPS can be used in the R plotting functions below, which summarise (amongst other things) the numerical behaviour of the inference processes, the ordering and timings (where appropriate) of feature acquisitions, the structure of the learned hypercubic transition network, and any outputs from regularisation. *To start, `plotHypercube.summary` gives an overview of what we've learned.*
+
+Probably the first thing to check is the likelihood trace (present in `plotHypercube.summary`, also directly via `plotHypercube.lik.trace`) -- see "Assessing performance" below.
+
+All of these except `plotHypercube.prediction` and `plotHypercube.curated.tree` take a fitted model -- the output of `HyperTraPS` -- as a required argument, and may take other options as the table describes (look at the documentation for each function for a fuller description). 
 
 | Plot function | Description | Options and defaults |
 |---------------|-------------|---------|
@@ -151,7 +131,7 @@ The various outputs of HyperTraPS can be used in the R plotting functions below,
 | `plotHypercube.prediction` | Visualise predictions of unobserved features or future behaviour, given a model fit | *prediction* (required, the output of `predictHiddenVals` or `predictNextStep` (see below)), *max.size*=30 (maximum size for word cloud) |
 | `plotHypercube.influences` | For the L^2 model, visualise how each feature acquisition influences the rate of acquisition of other features as a matrix |  *featurenames*=c("") (set of names for features); *use.regularised*=FALSE (use stepwise-regularised param set); *reorder*=FALSE (order features by base rate); *upper.right*=FALSE (control orientation of diagonal); *cv.thresh*=Inf (threshold posterior coefficient of variation, only plot interactions below this)|
 | `plotHypercube.influencegraph` | For the L^2 or L^3 model, visualise how each feature acquisition influences the rate of acquisition of other features as a network |  as `plotHypercube.influences`, plus *label.size*=2 (size of node labels) |
-| `plotHypercube.curated.tree` | For phylogenetic data curated with `curate.tree`, visualise tree and barcodes |  object returned by `curate.tree` |
+| `plotHypercube.curated.tree` | For phylogenetic data curated with `curate.tree`, visualise tree and barcodes |  Takes an object returned by `curate.tree` |
 
 Some useful ones are demonstrated by the `plotHypercube.summary` command. This should work for all model structures (it omits influence plots, which are only supported for L^2 and L^3 models):
 ![image](https://github.com/StochasticBiology/hypertraps-ct/assets/50171196/c70d69b9-8a79-4aae-ba1b-675c2cd8e0b8)
@@ -182,6 +162,53 @@ In the continuous case, the function `prob.by.time` will use the sampled dynamic
 
 will return a set of states and their associated probabilities at time 0.1.
 
+To ask about the observation probability of given states, you can use
+
+`state.probs(fit)`
+
+which reports the probabilities of different states (i) assuming that exactly the number of features in each state has been acquired (e.g. P(00110 | system has acquired 2 features)) and (ii) conditional on a profile of probabilities of feature acquisitions (e.g. P(00110 | P(0 features acquired), P(1 feature acquired), ..., P(5 features acquired))).
+
+To get the likelihood for an observation given a parameterisation, you can use
+
+`getLikelihood(obs, params, model)`
+
+where `obs` is a vector giving a state, `params` is a vector containing the parameter set, and `model` is the model structure (-1, 1, 2, 3, 4). 
+
+Assessing performance
+------
+
+HyperTraPS uses sampling to estimate likelihoods, and optionally (and by default) uses these likelihoods in an MCMC chain. Several aspects of this process can pose challenges. We want the likelihood estimates to be reliable and consistent, and the MCMC chain to be equilibrated and well mixing. Departures from this picture can lead to systematic errors in the parameter estimates and downstream output. 
+
+`plotHypercube.lik.trace` can be used to diagnose some of these issues. We want the output to look more like (D) in the figure below: the estimates (different lines) are overlapping, the chain is quite uncorrelated, there aren't systematic changes in the mean. In (A) the likelihood estimates don't agree: the black dashed lines and the red line are inconsistent. Here this has led to an MCMC issue as well: the red line undergoes long periods of stasis (it's been frozen by rare extreme samples). To fix non-converged estimates, use more random walkers in the estimation (increase `walkers`). You could also try auxiliary pseudo-marginal MCMC (`apm`). In (B) the chain is quite correlated, getting `stuck` at the same values for some time. This is because the kernel size for proposing MCMC moves is too big, so lots of proposed moves get rejected. To fix this, use a smaller kernel (decrease `kernel`). In (C) the chain is not equilibrated; there is still a systematic increase in the mean. To fix this, run a longer chain (increase `length`); you could also try a larger kernel (increase `kernel`) as long as the issue in (B) is avoided. 
+
+![image](https://github.com/user-attachments/assets/ceb842f9-6cc3-4fcb-a70b-cdf008a0c0f6)
+
+
+Output details
+------
+
+HyperTraPS will output information about the progress of a run to the console, and return a named list containing outputs from and descriptions of the inference process.
+
+*If you are just interested in plotting summary outputs from the inference process, skip to the next section now.*
+
+The output structures are
+
+| Information | R | Notes |
+|-------------|---|-------|
+| Number of features, model type, number of parameters, and likelihood traces over the run | *list*$lik.traces | |
+| Best parameterisation found during run | *list*$best | |
+| (Posterior) samples of parameterisation | *list*$posterior.samples | |
+| Probabilities for individual states | *list*$dynamics$states | Only produced for L < 16 |
+| Probabilities for individual transitions | *list*$dynamics$trans |  Only produced for L < 16 |
+| Best parameterisation after regularisation | *list*$regularisation$best |  Optional |
+| Number of parameters, likelihood, and information criteria during regularisation | *list*$regularisation$reg.process | Optional |
+| "Bubble" probabilities of trait *i* acquisition at ordinal time *j* | *list*$bubbles |  |
+| Histograms of times of trait *i* acquisition | *list*$timehists |  |
+| Individual sampled routes of accumulation | *list*$routes | Matrix with L columns; jth element of a row gives the feature acquired at step j. Each row is a sampled trajectory; there are *samples_per_row* samples per output parameterisation in the (posterior) sample set |
+| Transition times for individual sampled routes of accumulation | *list*$times | Matrix with L columns, with elements corresponding to the timings of each of the steps in the routes matrix above |
+| Dwelling statistics for individual sampled routes of accumulation | *list*$betas |  Matrix with L columns, with elements corresponding to the "beta" (characteristic rate of departure) for each step in the routes matrix above |
+
+
 References
 =====
 
@@ -189,4 +216,7 @@ Aga, O.N., Brun, M., Dauda, K.A., Diaz-Uriarte, R., Giannakis, K. and Johnston, 
 
 Casali, N., Nikolayevskyy, V., Balabanova, Y., Harris, S.R., Ignatyeva, O., Kontsevaya, I., Corander, J., Bryant, J., Parkhill, J., Nejentsev, S. and Horstmann, R.D., 2014. Evolution and transmission of drug-resistant tuberculosis in a Russian population. Nature genetics, 46(3), pp.279-286.
 
+Greenbury, S.F., Barahona, M. and Johnston, I.G., 2020. HyperTraPS: inferring probabilistic patterns of trait acquisition in evolutionary and disease progression pathways. Cell systems, 10(1), pp.39-51.
+
+Williams, B.P., Johnston, I.G., Covshoff, S. and Hibberd, J.M., 2013. Phenotypic landscape inference reveals multiple evolutionary paths to C4 photosynthesis. elife, 2, p.e00961.
 
