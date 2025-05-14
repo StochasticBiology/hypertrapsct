@@ -1,6 +1,6 @@
 # HyperTraPS(-CT)
 
-Hypercubic transition path sampling: Flexible inference of accumulation pathways, in discrete or continuous time, under different model structures, using combinations of longitudinal, cross-sectional, and phylogenetically-linked observations (Aga et al., 2024).
+Hypercubic transition path sampling: An R package for flexible inference of accumulation pathways, in discrete or continuous time, under different model structures, using combinations of longitudinal, cross-sectional, and phylogenetically-linked observations (Aga et al., 2024).
 
 R package branch: install with
 `remotes::install_github("StochasticBiology/hypertrapsct")`
