@@ -1,6 +1,6 @@
 #################
 
-remotes::install_github("StochasticBiology/hypertraps-ct@bioconductor")
+remotes::install_github("StochasticBiology/hypertrapsct")
 library(hypertrapsct)
 library(ggplot2)
 library(ggpubr)
