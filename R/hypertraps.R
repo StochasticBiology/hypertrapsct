@@ -1538,7 +1538,6 @@ curate.tree = function(tree.src, data.src,
 #' @param names whether to include tip names (default FALSE)
 #' @param font.size font size for feature names (default 4)
 #' @param hjust horizontal text justification for feature names (default 0)
-
 #' @return a ggplot
 #' @export
 plotHypercube.curated.tree = function(tree.set,
@@ -1565,6 +1564,50 @@ plotHypercube.curated.tree = function(tree.set,
               ggplot2::theme(legend.position="none")
 
   return(this.plot)
+}
+
+#' Compute retention indices from a set of transitions
+#' 
+#' The retention index of a feature is the average number of other features retained
+#' when it is lost (in a picture of evolutionary losses), or the average number of
+#' other features absent when it is gained (in a picture of evolutionary gains)
+#' 
+#' @param ct combined phylogeny and feature data created with [curate.tree()]
+#' @param losses logical, whether we are considering feature losses (as opposed to gains). Default FALSE
+#' @return a dataframe with computed mean and s.d. for retention indices for each feature
+#' @export
+retention.index = function(ct, losses = FALSE) {
+  # check for awkward entries like 2 or "?"
+  if(any(!(ct$srcs %in% c(0, 1))) | any(!(ct$dests %in% c(0, 1)))) {
+    message("Retention index not defined for non-binary data")
+    return(NULL)
+  }
+  L = ncol(ct$srcs)
+  # initialise a list
+  indices = vector("list", L)
+  # loop through transitions
+  for(i in 1:nrow(ct$srcs)) {
+    # identify changed features
+    refs = which(ct$srcs[i,] != ct$dests[i,])
+    # store the mean of source and destination feature count for these changed features
+    src.count = sum(ct$srcs[i,])
+    dest.count = sum(ct$dests[i,])
+    for(ref in refs) {
+      indices[[ref]] = c(indices[[ref]], (dest.count+src.count)/2)
+    }
+  }
+  # return a dataframe with summary stats of the feature counts
+  i.df = data.frame()
+  for(i in 1:L) {
+    if(length(indices[[i]]) > 0) {
+      if(losses == FALSE) {
+        i.df = rbind(i.df, data.frame(feature=i, index=mean(indices[[i]]), sd = sd(indices[[i]])))
+      } else {
+        i.df = rbind(i.df, data.frame(feature=i, index=mean(L-indices[[i]]), sd = sd(L-indices[[i]])))
+      }
+    }
+  }
+  return(i.df)
 }
 
 #' HyperTraPS demonstration
