@@ -68,6 +68,7 @@ plotHypercube.lik.trace = function(my.post) {
 #' @param my.post a model fit returned from HyperTraPS
 #' @param reorder logical, whether to reorder features by their mean ordering; default FALSE
 #' @param transpose logical, whether to transpose the axes of the plot; default FALSE
+#' @param p.color color for the bubbles (default black)
 #' @return a ggplot object
 #' @export
 #' @examples
@@ -77,7 +78,7 @@ plotHypercube.lik.trace = function(my.post) {
 #'                          1,1,1), byrow=TRUE, ncol=3)
 #' fitted.cube <- HyperTraPS(observations)
 #' plotHypercube.bubbles(fitted.cube)
-plotHypercube.bubbles = function(my.post, reorder=FALSE, transpose=FALSE) {
+plotHypercube.bubbles = function(my.post, reorder=FALSE, transpose=FALSE, p.color = "#000000") {
   toplot = my.post$bubbles
   if(reorder == TRUE) {
     toplot$Name = factor(toplot$Name, levels=unique(toplot$Name))
@@ -89,7 +90,7 @@ plotHypercube.bubbles = function(my.post, reorder=FALSE, transpose=FALSE) {
     toplot$x = toplot$Time
     toplot$y = toplot$Name
   }
-  this.plot = ggplot2::ggplot(toplot, ggplot2::aes(x=toplot$x, y=toplot$y, size=toplot$Probability)) + ggplot2::geom_point() +
+  this.plot = ggplot2::ggplot(toplot, ggplot2::aes(x=toplot$x, y=toplot$y, size=toplot$Probability)) + ggplot2::geom_point(color=p.color) +
     ggplot2::theme_light() 
   if(transpose == TRUE){
     return(this.plot + ggplot2::theme(axis.text.x = ggplot2::element_text(angle=90)) +
@@ -170,6 +171,8 @@ plotHypercube.bubbles.coarse = function(my.post, reorder=FALSE, transpose=FALSE,
 #' @param p.scale A scaling factor relating probability to bubble radius; default 1
 #' @param sqrt.trans Whether to sqrt-transform the probabilities (giving more uniform bubble sizes); default FALSE
 #' @param bins The number of bins to group time-ordering into; default 0 (do not bin)
+#' @param expt.names A vector of labels for each posterior output in the list (default empty)
+#' @param fill.name The label for the color bar in the legend (default "Experiment")
 #' @return a ggplot
 #' @export
 #' @examples
@@ -184,7 +187,9 @@ plotHypercube.bubbles.compare = function(my.post.list,
                                          reorder=FALSE, transpose=FALSE, 
                                          thetastep=10, p.scale = 1,
                                          sqrt.trans = FALSE, 
-                                         bins = 0) {
+                                         bins = 0,
+                                         expt.names = NULL,
+                                         fill.name = "Experiment") {
   # pass me a list of inference outputs; I'll do a pie-slice comparison of their bubble plots
   # make sure they have the same features!
   if(bins == 0) {
@@ -192,6 +197,11 @@ plotHypercube.bubbles.compare = function(my.post.list,
     for(i in 1:length(my.post.list)) {
       tmp = my.post.list[[i]]$bubbles
       tmp$expt = i
+      if(length(expt.names) == 0) {
+        tmp$exptname = i
+      } else {
+        tmp$exptname = expt.names[i]
+      }
       toplot = rbind(toplot, tmp)
     } 
   } else {
@@ -237,21 +247,23 @@ plotHypercube.bubbles.compare = function(my.post.list,
     # start the polygon at the x-y coordinate
     tmp = data.frame()
     tmp = rbind(tmp, data.frame(x1 = thisx, y1 = thisy, 
-                                ref = i, expt = toplot$expt[i])) 
+                                ref = i, expt = toplot$expt[i],
+                                exptname = toplot$exptname[i])) 
     # go round in steps of theta, building up the perimeter
     for(j in 0:(thetastep)) {
       theta = theta0+j*dtheta
       tmp = rbind(tmp, data.frame(x1 = thisx + thisz*cos(theta),
                                   y1 = thisy + thisz*sin(theta),
-                                  ref = i, expt = toplot$expt[i]))
+                                  ref = i, expt = toplot$expt[i],
+                                  exptname = toplot$exptname[i]))
     }
     
     polygons = rbind(polygons, tmp)
   }
   
   # plot the polygons, separated by coordinate and coloured by experiment
-  this.plot = ggplot2::ggplot(polygons, ggplot2::aes(x=polygons$x1, y=polygons$y1, group=polygons$ref, fill=factor(polygons$expt))) + ggplot2::geom_polygon() +
-    ggplot2::theme_light() + ggplot2::labs(fill="Experiment", x="Ordinal Time", y = "")
+  this.plot = ggplot2::ggplot(polygons, ggplot2::aes(x=polygons$x1, y=polygons$y1, group=polygons$ref, fill=factor(polygons$exptname))) + ggplot2::geom_polygon() +
+    ggplot2::theme_light() + ggplot2::labs(fill=fill.name, x="Ordinal Time", y = "")
   
   return(this.plot)
 }
@@ -1538,13 +1550,15 @@ curate.tree = function(tree.src, data.src,
 #' @param names whether to include tip names (default FALSE)
 #' @param font.size font size for feature names (default 4)
 #' @param hjust horizontal text justification for feature names (default 0)
+#' @param factor.vals whether to treat labelling variables as factor levels (default FALSE)
 #' @return a ggplot
 #' @export
 plotHypercube.curated.tree = function(tree.set,
                                       scale.fn = ggtree::geom_treescale(y=20, linesize=3, width =0.01),
-				      names = FALSE,
+                                      names = FALSE,
                                       font.size=4,
-                                      hjust=0) {
+                                      hjust=0,
+                                      factor.vals = FALSE) {
   data.m = tree.set$data[,2:ncol(tree.set$data)]
   rownames(data.m) = tree.set$data[,1]
   data.m = tree.set$data[1:length(tree.set$tree$tip.label), 2:ncol(tree.set$data)]
@@ -1559,10 +1573,15 @@ plotHypercube.curated.tree = function(tree.set,
   } else {
     g.core = ggtree::ggtree(tree.set$tree) + scale.fn
   }
-  this.plot = ggtree::gheatmap(g.core, data.m, low="white", high="#AAAAAA",
-                       colnames_angle=90, hjust=hjust, font.size=font.size) +
-              ggplot2::theme(legend.position="none")
-
+  if(factor.vals == TRUE) {
+    this.plot = ggtree::gheatmap(g.core, apply(data.m, c(1,2), as.factor),
+                                 colnames_angle=90, hjust=hjust, font.size=font.size) +
+      ggplot2::theme(legend.position="none")
+  } else {
+    this.plot = ggtree::gheatmap(g.core, data.m, low="white", high="#AAAAAA",
+                                 colnames_angle=90, hjust=hjust, font.size=font.size) +
+      ggplot2::theme(legend.position="none")
+  }  
   return(this.plot)
 }
 
@@ -1576,12 +1595,13 @@ plotHypercube.curated.tree = function(tree.set,
 #' @param losses logical, whether we are considering feature losses (as opposed to gains). Default FALSE
 #' @return a dataframe with computed mean and s.d. for retention indices for each feature
 #' @export
-retention.index = function(ct, losses = FALSE) {
+retention.index = function(ct, losses = FALSE, full.output=FALSE) {
   # check for awkward entries like 2 or "?"
   if(any(!(ct$srcs %in% c(0, 1))) | any(!(ct$dests %in% c(0, 1)))) {
     message("Retention index not defined for non-binary data")
     return(NULL)
   }
+  ri.set = data.frame()
   L = ncol(ct$srcs)
   # initialise a list
   indices = vector("list", L)
@@ -1594,6 +1614,11 @@ retention.index = function(ct, losses = FALSE) {
     dest.count = sum(ct$dests[i,])
     for(ref in refs) {
       indices[[ref]] = c(indices[[ref]], (dest.count+src.count)/2)
+      ri.set = rbind(ri.set, data.frame(ref=ref, trans.index = i, 
+                                        src = paste0(ct$srcs[i,], collapse=""),
+                                        dest = paste0(ct$dests[i,], collapse=""),
+                                        src.count=src.count, dest.count = dest.count,
+                                        this.index.val = (dest.count+src.count)/2))
     }
   }
   # return a dataframe with summary stats of the feature counts
@@ -1607,7 +1632,12 @@ retention.index = function(ct, losses = FALSE) {
       }
     }
   }
-  return(i.df)
+  if(full.output == TRUE) {
+    return(list("indices"=i.df,
+                "info"=ri.set))
+  } else {
+    return(i.df)
+  }
 }
 
 #' HyperTraPS demonstration
