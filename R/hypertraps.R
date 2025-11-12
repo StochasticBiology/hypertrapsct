@@ -408,11 +408,13 @@ plotHypercube.sampledgraph2 = function(my.post, max.samps = 1000, thresh = 0.05,
                                        edge.label.colour = "#000000", edge.check.overlap = TRUE,
                                        featurenames = TRUE, truncate = -1,
                                        node.label.size = 2, use.timediffs = TRUE) {
-  if(featurenames == TRUE) {
-    featurenames = my.post$featurenames
-  } else {
-    featurenames = c("")
-  }
+  if(length(featurenames) == 1) {
+    if(featurenames == TRUE) {
+      featurenames = my.post$featurenames
+    } else {
+      featurenames = c("")
+    }
+  } 
   edge.from = edge.to = edge.time = edge.change = c()
   bigL = my.post$L
   if(truncate == -1 | truncate > bigL) { truncate = bigL }
