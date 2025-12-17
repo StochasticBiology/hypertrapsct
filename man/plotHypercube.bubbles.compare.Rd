@@ -11,7 +11,9 @@ plotHypercube.bubbles.compare(
   thetastep = 10,
   p.scale = 1,
   sqrt.trans = FALSE,
-  bins = 0
+  bins = 0,
+  expt.names = NULL,
+  fill.name = "Experiment"
 )
 }
 \arguments{
@@ -28,6 +30,10 @@ plotHypercube.bubbles.compare(
 \item{sqrt.trans}{Whether to sqrt-transform the probabilities (giving more uniform bubble sizes); default FALSE}
 
 \item{bins}{The number of bins to group time-ordering into; default 0 (do not bin)}
+
+\item{expt.names}{A vector of labels for each posterior output in the list (default empty)}
+
+\item{fill.name}{The label for the color bar in the legend (default "Experiment")}
 }
 \value{
 a ggplot

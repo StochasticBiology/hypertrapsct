@@ -9,7 +9,8 @@ plotHypercube.curated.tree(
   scale.fn = ggtree::geom_treescale(y = 20, linesize = 3, width = 0.01),
   names = FALSE,
   font.size = 4,
-  hjust = 0
+  hjust = 0,
+  factor.vals = FALSE
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ plotHypercube.curated.tree(
 \item{font.size}{font size for feature names (default 4)}
 
 \item{hjust}{horizontal text justification for feature names (default 0)}
+
+\item{factor.vals}{whether to treat labelling variables as factor levels (default FALSE)}
 }
 \value{
 a ggplot
