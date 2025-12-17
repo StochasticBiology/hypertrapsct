@@ -1,6 +1,5 @@
 #' Hypercubic inference in continuous time
 #'
-#' @docType _PACKAGE
 #' @name hypertrapsct
 #' @useDynLib hypertrapsct
 #' @importFrom Rcpp evalCpp sourceCpp
@@ -1595,6 +1594,7 @@ plotHypercube.curated.tree = function(tree.set,
 #' 
 #' @param ct combined phylogeny and feature data created with [curate.tree()]
 #' @param losses logical, whether we are considering feature losses (as opposed to gains). Default FALSE
+#' @param full.output logical, whether to provide full output from the process. Default FALSE
 #' @return a dataframe with computed mean and s.d. for retention indices for each feature
 #' @export
 retention.index = function(ct, losses = FALSE, full.output=FALSE) {
