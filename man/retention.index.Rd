@@ -4,12 +4,14 @@
 \alias{retention.index}
 \title{Compute retention indices from a set of transitions}
 \usage{
-retention.index(ct, losses = FALSE)
+retention.index(ct, losses = FALSE, full.output = FALSE)
 }
 \arguments{
 \item{ct}{combined phylogeny and feature data created with [curate.tree()]}
 
 \item{losses}{logical, whether we are considering feature losses (as opposed to gains). Default FALSE}
+
+\item{full.output}{logical, whether to provide full output from the process. Default FALSE}
 }
 \value{
 a dataframe with computed mean and s.d. for retention indices for each feature

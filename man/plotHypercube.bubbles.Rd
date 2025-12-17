@@ -4,7 +4,12 @@
 \alias{plotHypercube.bubbles}
 \title{Bubble plot for acquisition ordering}
 \usage{
-plotHypercube.bubbles(my.post, reorder = FALSE, transpose = FALSE)
+plotHypercube.bubbles(
+  my.post,
+  reorder = FALSE,
+  transpose = FALSE,
+  p.color = "#000000"
+)
 }
 \arguments{
 \item{my.post}{a model fit returned from HyperTraPS}
@@ -12,6 +17,8 @@ plotHypercube.bubbles(my.post, reorder = FALSE, transpose = FALSE)
 \item{reorder}{logical, whether to reorder features by their mean ordering; default FALSE}
 
 \item{transpose}{logical, whether to transpose the axes of the plot; default FALSE}
+
+\item{p.color}{color for the bubbles (default black)}
 }
 \value{
 a ggplot object
