@@ -194,13 +194,6 @@ ggarrange(plotHypercube.timehists(my.post.time.precise, t.thresh=3),
           plotHypercube.timehists(my.post.time.inf, t.thresh=3),
           nrow=3)
 
-# write output to files
-writeHyperinf(my.post, "simpledemo", my.post$L, postlabel = "simpledemo", fulloutput=TRUE)
-
-# retrieve output from files
-my.post.r = readHyperinf("simpledemo", postlabel = "simpledemo", fulloutput=TRUE)
-plotHypercube.summary(my.post.r)
-
 # run an example with fewer walkers
 my.post.sparse = HyperTraPS(m.2, initialstates = m.1, 
                             starttimes = times, endtimes = times,
