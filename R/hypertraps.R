@@ -737,7 +737,7 @@ plotHypercube.summary = function(my.post, f.thresh = 0.05, t.thresh = 20, contin
 #'                          0,1,1,
 #'                          1,1,1), byrow=TRUE, ncol=3)
 #' fitted.cube <- HyperTraPS(observations)
-#' plotHypercube.bubbles(fitted.cube)
+#' plotHypercube.influences(fitted.cube)
 plotHypercube.influences = function(my.post, 
                                     featurenames=TRUE, 
                                     use.regularised = FALSE, 
@@ -838,13 +838,6 @@ mylabel = function(label, suffix) {
 #'      Defaults to FALSE.
 #' @return A list of loaded data.
 #' @export
-#' @examples
-#' observations <- matrix(c(0,0,0,
-#'                          0,0,1,
-#'                          0,1,1,
-#'                          1,1,1), byrow=TRUE, ncol=3)
-#' fitted.cube <- HyperTraPS(observations)
-#' plotHypercube.bubbles(fitted.cube)
 readHyperinf = function(label, postlabel = "", fulloutput=FALSE, regularised = FALSE) {
   rL = list()
   rL$label = label
@@ -897,13 +890,6 @@ readHyperinf = function(label, postlabel = "", fulloutput=FALSE, regularised = F
 #' @param regularised Whether regularisation data should be written to file.
 #'      Defaults to FALSE.
 #' @export
-#' @examples
-#' observations <- matrix(c(0,0,0,
-#'                          0,0,1,
-#'                          0,1,1,
-#'                          1,1,1), byrow=TRUE, ncol=3)
-#' fitted.cube <- HyperTraPS(observations)
-#' writeHyperinf(fitted.cube, "my_cube")
 writeHyperinf = function(wL, label, postlabel = "", fulloutput=FALSE, regularised=FALSE) {
     utils::write.table(t(wL$best), mylabel(label, "-best.txt"), row.names=FALSE, col.names=FALSE)
   utils::write.table(wL$posterior.samples, mylabel(label, "-posterior.txt"), row.names=FALSE, col.names=FALSE)

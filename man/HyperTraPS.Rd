@@ -10,7 +10,7 @@ HyperTraPS(
   priors = NULL,
   starttimes = NULL,
   endtimes = NULL,
-  length = 3L,
+  length = 4L,
   kernel = 5L,
   samplegap = -1L,
   losses = 0L,
@@ -44,7 +44,7 @@ HyperTraPS(
 
 \item{endtimes}{An optional vector of n times describing the end of the observation time window for each observation. If empty, equivalent to this time window ending at time infinity. If specified, should be of length n.}
 
-\item{length}{log10(length of MCMC chain). For example, 6 would give a chain of length 10^6. Default 3.}
+\item{length}{log10(length of MCMC chain). For example, 6 would give a chain of length 10^6. Default 4 (10^4).}
 
 \item{kernel}{Kernel index. 1: with probability 0.1 per parameter, apply kernel width 0.005. 2-7: apply kernel to each parameter, with width 0.01 (2), 0.05 (3), 0.1 (4), 0.25 (5), 0.5 (6), 0.75 (7). Default 5.}
 

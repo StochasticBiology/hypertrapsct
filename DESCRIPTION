@@ -29,7 +29,6 @@ Imports:
     phangorn,
     phytools,
     ggtree,
-    parallel,
     ape,
     viridis
 LinkingTo: Rcpp

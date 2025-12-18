@@ -29,11 +29,3 @@ Defaults to FALSE.}
 \description{
 `writeHyperinf` saves output from [HyperTraPS()] to file.
 }
-\examples{
-observations <- matrix(c(0,0,0,
-                         0,0,1,
-                         0,1,1,
-                         1,1,1), byrow=TRUE, ncol=3)
-fitted.cube <- HyperTraPS(observations)
-writeHyperinf(fitted.cube, "my_cube")
-}
