@@ -24,11 +24,3 @@ A list of loaded data.
 \description{
 `readHyperinf` reads csv-files created by [writeHyperinf()].
 }
-\examples{
-observations <- matrix(c(0,0,0,
-                         0,0,1,
-                         0,1,1,
-                         1,1,1), byrow=TRUE, ncol=3)
-fitted.cube <- HyperTraPS(observations)
-plotHypercube.bubbles(fitted.cube)
-}

@@ -45,5 +45,5 @@ observations <- matrix(c(0,0,0,
                          0,1,1,
                          1,1,1), byrow=TRUE, ncol=3)
 fitted.cube <- HyperTraPS(observations)
-plotHypercube.bubbles(fitted.cube)
+plotHypercube.influences(fitted.cube)
 }
