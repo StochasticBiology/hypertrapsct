@@ -28,8 +28,9 @@ Imports:
     stringdist,
     phangorn,
     phytools,
-    ggtree,
     ape,
     viridis
+Remotes:
+    YuLab-SMU/ggtree
 LinkingTo: Rcpp
 Suggests: knitr, rmarkdown
