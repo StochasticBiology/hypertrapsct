@@ -26,6 +26,7 @@ getLikelihood <- function(obs, params, model, initialstate = NULL, starttime = N
 #' @param kernel Kernel index. 1: with probability 0.1 per parameter, apply kernel width 0.005. 2-7: apply kernel to each parameter, with width 0.01 (2), 0.05 (3), 0.1 (4), 0.25 (5), 0.5 (6), 0.75 (7). Default 5.
 #' @param walkers Number of random walkers to use in estimating likelihood with HyperTraPS. Higher numbers take more time but will give more consistent and reliable likelihood estimates. Default 200.
 #' @param priors Prior details for the parameters. Should be an N x 2 matrix, where N is the number of parameters for the chosen model structure. The two columns give the lower and upper bounds of a uniform prior distribution in log space for each parameter.
+#' @param initialparams Initial parameterisation to try. Should be a vector of the correct length for a given model and dataset, e.g. L^2 for L features and the pairwise model.
 #' @param samplegap Number of MCMC steps between parameter samples that are treated as posterior samples. Higher values guard against correlated sampling. Default is 1000 for chain lengths over 1e4; 100 over 1e2; 1 otherwise.
 #' @param losses Whether to consider accumulation of gains (0) or losses (1). Default 0.
 #' @param apm_type Whether to use auxiliary pseudo-marginal MCMC (1) or not (0). APM is more computationally expensive but can help stop the MCMC chain getting stuck because of rare extreme likelihood estimates. Default 0.
@@ -45,8 +46,8 @@ getLikelihood <- function(obs, params, model, initialstate = NULL, starttime = N
 #' @param featurenames Character vector containing the names of the different features.
 #' @return A HyperTraPS model fit: a named list of objects from the inference process, containing parameter samples from the inference process, the maximum likelihood parameterisation, likelihood samples, and the sampling times.
 #' @export
-HyperTraPS <- function(obs, initialstates = NULL, priors = NULL, starttimes = NULL, endtimes = NULL, length = 4L, kernel = 5L, samplegap = -1L, losses = 0L, apm_type = 0L, sa = 0L, sgd = 0L, sgd_scale = 0.01, seed = 1L, outputinput = 0L, regularise = 0L, penalty = 0L, lasso = 0L, model = 2L, pli = 0L, walkers = 200L, full_analysis = 1L, limited_output = 0L, output_transitions = 1L, samples_per_row = 10L, featurenames = NULL) {
-    .Call('_hypertrapsct_HyperTraPS', PACKAGE = 'hypertrapsct', obs, initialstates, priors, starttimes, endtimes, length, kernel, samplegap, losses, apm_type, sa, sgd, sgd_scale, seed, outputinput, regularise, penalty, lasso, model, pli, walkers, full_analysis, limited_output, output_transitions, samples_per_row, featurenames)
+HyperTraPS <- function(obs, initialstates = NULL, priors = NULL, initialparams = NULL, starttimes = NULL, endtimes = NULL, length = 4L, kernel = 5L, samplegap = -1L, losses = 0L, apm_type = 0L, sa = 0L, sgd = 0L, sgd_scale = 0.01, seed = 1L, outputinput = 0L, regularise = 0L, penalty = 0L, lasso = 0L, model = 2L, pli = 0L, walkers = 200L, full_analysis = 1L, limited_output = 0L, output_transitions = 1L, samples_per_row = 10L, featurenames = NULL) {
+    .Call('_hypertrapsct_HyperTraPS', PACKAGE = 'hypertrapsct', obs, initialstates, priors, initialparams, starttimes, endtimes, length, kernel, samplegap, losses, apm_type, sa, sgd, sgd_scale, seed, outputinput, regularise, penalty, lasso, model, pli, walkers, full_analysis, limited_output, output_transitions, samples_per_row, featurenames)
 }
 
 #' Extracts information from HyperTraPS-related posterior samples

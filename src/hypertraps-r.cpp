@@ -16,6 +16,7 @@ List OutputStatesR(double *ntrans, int LEN, int model);
 List HyperTraPS(NumericMatrix obs,
                 Nullable<NumericMatrix> initialstates,
                 Nullable<NumericMatrix> priors,
+                Nullable<NumericVector> initialparams,
                 Nullable<NumericVector> starttimes,
                 Nullable<NumericVector> endtimes,
                 NumericVector length,
@@ -1259,6 +1260,7 @@ double getLikelihood(NumericVector obs,
 //' @param kernel Kernel index. 1: with probability 0.1 per parameter, apply kernel width 0.005. 2-7: apply kernel to each parameter, with width 0.01 (2), 0.05 (3), 0.1 (4), 0.25 (5), 0.5 (6), 0.75 (7). Default 5.
 //' @param walkers Number of random walkers to use in estimating likelihood with HyperTraPS. Higher numbers take more time but will give more consistent and reliable likelihood estimates. Default 200.
 //' @param priors Prior details for the parameters. Should be an N x 2 matrix, where N is the number of parameters for the chosen model structure. The two columns give the lower and upper bounds of a uniform prior distribution in log space for each parameter.
+//' @param initialparams Initial parameterisation to try. Should be a vector of the correct length for a given model and dataset, e.g. L^2 for L features and the pairwise model.
 //' @param samplegap Number of MCMC steps between parameter samples that are treated as posterior samples. Higher values guard against correlated sampling. Default is 1000 for chain lengths over 1e4; 100 over 1e2; 1 otherwise.
 //' @param losses Whether to consider accumulation of gains (0) or losses (1). Default 0.
 //' @param apm_type Whether to use auxiliary pseudo-marginal MCMC (1) or not (0). APM is more computationally expensive but can help stop the MCMC chain getting stuck because of rare extreme likelihood estimates. Default 0.
@@ -1282,6 +1284,7 @@ double getLikelihood(NumericVector obs,
 List HyperTraPS(NumericMatrix obs, //NumericVector len_arg, NumericVector ntarg_arg,
                 Nullable<NumericMatrix> initialstates = R_NilValue,
                 Nullable<NumericMatrix> priors = R_NilValue,
+                Nullable<NumericVector> initialparams = R_NilValue,
                 Nullable<NumericVector> starttimes = R_NilValue,
                 Nullable<NumericVector> endtimes = R_NilValue,
                 NumericVector length = 4,
@@ -1598,8 +1601,25 @@ List HyperTraPS(NumericMatrix obs, //NumericVector len_arg, NumericVector ntarg_
     snprintf(labelstr, sizeof(labelstr), "%s-%i-%i-%i-%.3f-%i-%i-%i", obsfile, spectrumtype, searchmethod, _seed, _lengthindex, _kernelindex, BANK, _apm_type);
   }
   
-  // initialise with an agnostic transition matrix
-  if(priors.isUsable())
+  // initialise with an agnostic transition matrix unless we have specific start or priors
+  if(initialparams.isUsable()) {
+    NumericVector _initialparams(initialparams);
+    if(_initialparams.length() != NVAL) {
+      Rprintf("Wrong number of elements in initial parameterisation!");
+      myexit(0);
+    }
+    for(i = 0; i < NVAL; i++)
+    {
+      if(priors.isUsable()) {
+        if(_initialparams[i] < _priors(i,0) || _initialparams[i] > _priors(i,0)) {
+          Rprintf("Initial parameterisation incompatible with priors!");
+          myexit(0);
+        }
+      }
+      trans[i] = _initialparams[i];
+    }
+  } 
+  else if(priors.isUsable())
   {
     if(!_limited_output)
       Rprintf("Starting with centre of priors\n");
