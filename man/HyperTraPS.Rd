@@ -8,6 +8,7 @@ HyperTraPS(
   obs,
   initialstates = NULL,
   priors = NULL,
+  initialparams = NULL,
   starttimes = NULL,
   endtimes = NULL,
   length = 4L,
@@ -39,6 +40,8 @@ HyperTraPS(
 \item{initialstates}{An optional matrix of initial states. If we are using longitudinal observations, each row in this matrix gives the "before" state to the corresponding "after" state in the observations matrix. Omitting this matrix is equivalent to consider every observation to have a root "before" state. If specified, should be n x L, containing n cross-sectional observations of length L, to match the observations matrix.}
 
 \item{priors}{Prior details for the parameters. Should be an N x 2 matrix, where N is the number of parameters for the chosen model structure. The two columns give the lower and upper bounds of a uniform prior distribution in log space for each parameter.}
+
+\item{initialparams}{Initial parameterisation to try. Should be a vector of the correct length for a given model and dataset, e.g. L^2 for L features and the pairwise model.}
 
 \item{starttimes}{An optional vector of n times describing the beginning of the observation time window for each observation. If empty, equivalent to this time window beginning at time 0. If specified, should be of length n.}
 
