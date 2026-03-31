@@ -608,6 +608,9 @@ double LikelihoodMultiple(int *targ, double *P, int LEN, int *startpos, double t
       {
         // for non-missing data, the comparison of total hits to emission count (ie opportunities for emission) factors out of the likelihood. but for missing data, different paths may have different numbers of opportunities to emit an observation-compatible signal, which we need to account for
         prob_path += (prodreject[n]*((double)(totalhits[n])/emission_count))/BANK;
+        if(SUPERVERBOSE) {
+          Rprintf("n %i prodreject %f totalhits %i emission_count %i\n", n, prodreject[n], totalhits[n], emission_count);
+        }
       }
     }
     
@@ -1352,6 +1355,7 @@ List HyperTraPS(NumericMatrix obs, //NumericVector len_arg, NumericVector ntarg_
   int regterm;
   double lassoterm;
   int _samplegap;
+  int bestparams;
   
   // default values
   num_error = 0;
@@ -1711,10 +1715,13 @@ List HyperTraPS(NumericMatrix obs, //NumericVector len_arg, NumericVector ntarg_
     // if we've got a new best likelihood, store it
     if(lik > bestlik || t == 0)
     {
-      for(i = 0; i < NVAL; i++)
+      bestparams = 0;
+      for(i = 0; i < NVAL; i++) {
         best_output[i] = besttrans[i] = trans[i];
+        bestparams += (trans[i] != 0);
+      }
       bestlik = lik;
-      
+
       if(_outputtransitions)
       { 
         dynamics_output = OutputStatesR(besttrans, len, _model);
@@ -1902,6 +1909,7 @@ List HyperTraPS(NumericMatrix obs, //NumericVector len_arg, NumericVector ntarg_
                         Named("model") = _model,
                         Named("best") = best_output,
                         Named("bestlik") = bestlik,
+                        Named("bestparams") = bestparams,
                         Named("posterior.samples") = posterior_output,
                         Named("lik.traces") = Ltsdf);
   
