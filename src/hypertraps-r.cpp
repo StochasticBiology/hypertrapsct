@@ -1901,6 +1901,7 @@ List HyperTraPS(NumericMatrix obs, //NumericVector len_arg, NumericVector ntarg_
                         Named("L") = len,
                         Named("model") = _model,
                         Named("best") = best_output,
+                        Named("bestlik") = bestlik,
                         Named("posterior.samples") = posterior_output,
                         Named("lik.traces") = Ltsdf);
   
